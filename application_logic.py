@@ -2,7 +2,6 @@ import streamlit as st
 from typing import List
 from collections import defaultdict
 import pandas as pd
-from st_aggrid import AgGrid
 
 # Define custom styles for metrics
 def custom_metric(label, value, color):
@@ -14,17 +13,14 @@ def custom_metric(label, value, color):
     """, unsafe_allow_html=True)
 
 
-def calculate_increate(data: List, attr1:str, attr2:str = None):
+def calculate_increate(data: List, attr1:str):
     # Sort data by year
-    data_sorted = sorted(data, key=lambda x: x["year"])
+    data_sorted = sorted(data, key=lambda x: x["interview_year"])
 
     # Get pregnancy counts for the earliest and latest year
-    earliest_data = data_sorted[0][attr1]
-    latest_data = data_sorted[-1][attr1]
-
-    if attr2:
-        earliest_data += data_sorted[0][attr2]
-        latest_data += data_sorted[-1][attr2]
+    summary = create_upload_summary(data_sorted, "survey_round")
+    earliest_data = summary[0][attr1]
+    latest_data = summary[-1][attr1]
 
     # Calculate absolute and percentage increase
     absolute_increase = latest_data - earliest_data
@@ -61,47 +57,53 @@ def records_grouped_by_district(records: List):
         return dict(grouped_data)
 
 # COUNT PARTICULAR VALUES IN TABLE COLUMN
-def count_frequency(table_datas: List, column: str, value):
+def count_frequency(table_datas: List, column: str, value, reverse: bool = False):
+    if reverse:
+        return sum(1 for data in table_datas if data[column] != value) 
     return sum(1 for data in table_datas if data[column] == value)
+
 
 #CREATE UPLOAD SUMMARY
 def create_upload_summary(arr_records: List, group_name: str):
         
-        # Initialize a defaultdict with two levels of nesting
-        result = defaultdict(lambda: {
-            "ages": 0, 
-            "pregnant_count": 0, 
-            "women_count": 0,
-            "literacy_count": 0
-        })
+    # Initialize a defaultdict with two levels of nesting
+    result = defaultdict(lambda: {
+        "ages": 0, 
+        "pregnant_count": 0, 
+        "women_count": 0,
+        "literacy_count": 0
+    })
+
+    for record in arr_records:
+        if record["age_range"] != "15-19":
+            continue
+
+        filter_name = record[group_name]
+
+        #Ages
+        result[filter_name]["ages"] = record["current_age"]
+
+        #Pregnant count
+        if record["currently_pregnant"] == "yes":
+            result[filter_name]["pregnant_count"] += 1
+
+        #Women count
+        result[filter_name]["women_count"] += 1
+
+        #Female educated count
+        if record["literacy"] and record["literacy"] != "cannot read at all":
+            result[filter_name]["literacy_count"] += 1
+
+    return list(dict(result).values())
+
+# Function to search by partial district name
+def search_surveys_district(surveys: List, query:str):
+    # Convert query to lowercase for case-insensitive matching
+    query = query.lower()
+    # Find all districts that contain the query string
+    matching_surveys = {district: samples for district, samples in surveys.items() if query in district.lower()}
     
-        for record in arr_records:
-            if record["age_range"] != "15-19":
-                continue
-
-            filter_name = record[group_name]
-
-            #Ages
-            result[filter_name]["ages"] = record["current_age"]
-
-            #Pregnant count
-            if record["currently_pregnant"] == "yes":
-                result[filter_name]["pregnant_count"] += 1
-
-            #Women count
-            result[filter_name]["women_count"] += 1
-
-            #Female educated count
-            if record["literacy"] and record["literacy"] != "cannot read at all":
-                result[filter_name]["literacy_count"] += 1
-
-        df = pd.DataFrame(list(dict(result).values()))
-
-        df = df.rename(columns={
-            "ages": "Ages", 
-            "pregnant_count": "Pregnancy Count", 
-            "women_count": "Total Women",
-            "literacy_count": "Literate Count"
-        })
-
-        AgGrid(df, fit_columns_on_grid_load= True, height=180)
+    if matching_surveys:
+        return matching_surveys
+    else:
+        return f"No districts found containing '{query}'"

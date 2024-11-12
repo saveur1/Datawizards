@@ -9,6 +9,7 @@ from time import sleep
 from streamlit_extras.metric_cards import style_metric_cards
 from sqlalchemy.exc import IntegrityError
 from typing import List
+from st_aggrid import AgGrid
 
 #Local Imports
 import data_injection as datas
@@ -42,8 +43,25 @@ def project_sidebar(db_records):
         years[:2],
     )
 
+    #Ages Filter
+    ages = st.multiselect(
+        "Select Ages",
+        ["13", "14", "15", "16", "17", "18"],
+        ["13", "14"],
+    )
+
+    search_district = st.text_input("Search District", placeholder="Kicukiro")
+
+    # Districts filters
     filtered_records = appl.records_based_onyears(db_records, years_options)
     districts_groups = appl.records_grouped_by_district(filtered_records)
+
+    if search_district:  #Search Functionality
+        districts_groups = appl.search_surveys_district(districts_groups, search_district.lower())
+    else:
+        districts_groups = appl.records_grouped_by_district(filtered_records)
+
+    
 
     if years_options:
         st.markdown(f"""
@@ -57,47 +75,38 @@ def project_sidebar(db_records):
         if st.button("View Details", key = "All districts"):
             st.session_state.filtered_records = filtered_records
 
-        #District Filter
+
         for district, records in districts_groups.items():
 
-            pregnancy_count = sum(list({data["pregnant_count"] for data in records}))
-            total_teenagers = sum(list({data["female_teenager"] for data in records}))
-
+            pregnancy_count = appl.count_frequency(records, "currently_pregnant", "yes")
+            total_teenagers = len(records)
             st.markdown(f"""
             <div style="margin:0; border-bottom:1px solid rgba(0,0,0,0.2); padding-bottom:5px;margin-top:10px;margin-bottom:5px">
-                <p style="margin:0; padding:0;font-weight:bold">{ district }</p>
+                <p style="margin:0; padding:0;font-weight:bold">{ district.capitalize() }</p>
                 <p style="margin:0; padding:0; margin-top:0">{min(years_options)} - {max(years_options)}: <span style="color: red">{ "{:,.0f}".format(pregnancy_count) } Pregnancy</span></p>
                 <p style="margin:0; padding:0; margin-top:0">Total Female: { "{:,.0f}".format(total_teenagers) } Teenagers</p>
             """, unsafe_allow_html=True)
 
             if st.button("View Details", key = district):
                 st.session_state.filtered_records = records
-            
-
-    #Ages Filter
-    ages = st.multiselect(
-        "Select Ages",
-        ["13", "14", "15", "16", "17", "18"],
-        ["13", "14"],
-    )
 
 
 #METRICS CARDS
 def metric_cards():
     filtered_records = st.session_state.filtered_records
-    pregnant_teenagers = sum(appl.object_values(filtered_records, "pregnant_count"))
+    pregnant_teenagers = appl.count_frequency(filtered_records, "currently_pregnant", "yes")
 
     #totoal teenagers and total educated teenagers
-    total_educated = sum(appl.object_values(filtered_records, "female_educated", "male_educated"))
-    total_teenager = sum(appl.object_values(filtered_records, "female_teenager", "male_teenager"))
+    total_educated = appl.count_frequency(filtered_records, "literacy", "cannot read at all", reverse=True)
+    total_teenager = len(filtered_records)
 
 
     percentage_educated = (total_educated * 100)//total_teenager
 
     #Pregnancy increase
     pregnancy_increase = appl.calculate_increate(filtered_records, "pregnant_count")
-    educated_increase = appl.calculate_increate(filtered_records, "male_educated", "female_educated")
-    teenage_increase = appl.calculate_increate(filtered_records, "male_teenager", "female_teenager")
+    educated_increase = appl.calculate_increate(filtered_records, "literacy_count")
+    teenage_increase = appl.calculate_increate(filtered_records, "women_count")
 
     # Create columns
     col1, col2, col3 = st.columns(3)
@@ -143,7 +152,17 @@ def upload_xlsx_file(xlsx_file):
             array_data = [data for data in array_data if data["current_age"] < 20]
 
             # create data summary
-            appl.create_upload_summary(array_data, "current_age")
+            summary = appl.create_upload_summary(array_data, "current_age")
+            df = pd.DataFrame(summary)
+
+            df = df.rename(columns={
+                "ages": "Ages", 
+                "pregnant_count": "Pregnancy Count", 
+                "women_count": "Total Women",
+                "literacy_count": "Literate Count"
+            })
+
+            AgGrid(df, fit_columns_on_grid_load= True, height=180)
 
             #Input Survey round name
             survey_wave_name = st.text_input("Enter Survey Wave name", placeholder="2019-20")
