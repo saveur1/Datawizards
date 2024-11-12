@@ -2,6 +2,7 @@ import streamlit as st
 from typing import List
 from collections import defaultdict
 import pandas as pd
+from st_aggrid import AgGrid
 
 # Define custom styles for metrics
 def custom_metric(label, value, color):
@@ -47,7 +48,7 @@ def object_values(arr: List, attr1: str, attr2: str=""):
     
 
 def records_based_onyears(records:List, years: List)->List:
-    return [data for data in records if data["year"] in years]
+    return [data for data in records if data["survey_round"] in years]
 
 
 def records_grouped_by_district(records: List):      
@@ -59,34 +60,48 @@ def records_grouped_by_district(records: List):
         # Convert defaultdict to a regular dict
         return dict(grouped_data)
 
-def fill_records_database(arr_records: List):
+# COUNT PARTICULAR VALUES IN TABLE COLUMN
+def count_frequency(table_datas: List, column: str, value):
+    return sum(1 for data in table_datas if data[column] == value)
+
+#CREATE UPLOAD SUMMARY
+def create_upload_summary(arr_records: List, group_name: str):
         
         # Initialize a defaultdict with two levels of nesting
-        result = defaultdict(lambda: defaultdict(lambda: {
-            "district": None, 
-            "year": 0, 
+        result = defaultdict(lambda: {
+            "ages": 0, 
             "pregnant_count": 0, 
-            "male_educated": 0,
-            "female_educated": 0
-        }))
+            "women_count": 0,
+            "literacy_count": 0
+        })
     
         for record in arr_records:
-            if record["age-range"] != "15-19":
+            if record["age_range"] != "15-19":
                 continue
 
-            district = record["districts"]  #v023 contains districts
-            years = record["years"]  #v007 contains years
+            filter_name = record[group_name]
 
-            #Districts
-            result[years][district]["district"] = district
-
-            #Years
-            result[years][district]["year"] = record["years"] #v007 contains years
+            #Ages
+            result[filter_name]["ages"] = record["current_age"]
 
             #Pregnant count
-            if record["currently-pregnant"] == "yes":
-                result[years][district]["pregnant_count"] += 1
+            if record["currently_pregnant"] == "yes":
+                result[filter_name]["pregnant_count"] += 1
 
+            #Women count
+            result[filter_name]["women_count"] += 1
 
+            #Female educated count
+            if record["literacy"] and record["literacy"] != "cannot read at all":
+                result[filter_name]["literacy_count"] += 1
 
-        print([result for data in dict(result).values() for result in list(dict(data).values())])
+        df = pd.DataFrame(list(dict(result).values()))
+
+        df = df.rename(columns={
+            "ages": "Ages", 
+            "pregnant_count": "Pregnancy Count", 
+            "women_count": "Total Women",
+            "literacy_count": "Literate Count"
+        })
+
+        AgGrid(df, fit_columns_on_grid_load= True, height=180)

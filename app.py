@@ -26,7 +26,7 @@ with open("style.css") as t:
 # PROJECT SIDEBAR
 def project_sidebar(db_records):
     # Needed data
-    years = list({entry["year"] for entry in db_records})
+    years = list({entry["survey_round"] for entry in db_records})
     
 
     # Display logo
@@ -37,7 +37,7 @@ def project_sidebar(db_records):
 
     #Years Filter
     years_options = st.multiselect(
-        "Select Year",
+        "Select Survey period",
         years,
         years[:2],
     )
@@ -49,8 +49,9 @@ def project_sidebar(db_records):
         st.markdown(f"""
             <div style="margin:0; border-bottom:1px solid rgba(0,0,0,0.2); padding-bottom:5px;margin-top:10px;margin-bottom:5px">
                 <p style="margin:0; padding:0;font-weight:bold"> All Districts</p>
-                <p style="margin:0; padding:0; margin-top:0">{min(years_options)} - {max(years_options)}: <span style="color: red">{"{:,.0f}".format(sum(appl.object_values(filtered_records, "pregnant_count")))} Pregnancy</span></p>
-                <p style="margin:0; padding:0; margin-top:0">Total Female: { "{:,.0f}".format(sum(appl.object_values(filtered_records, "female_teenager"))) } Teenagers</p>
+                <p style="margin:0; padding:0; margin-top:0">{min(years_options)} - {max(years_options)}: <span style="color: red">{"{:,.0f}".format(appl.count_frequency(filtered_records, "currently_pregnant", "yes"))} Pregnancy</span></p>
+                <p style="margin:0; padding:0; margin-top:0">Total: { "{:,.0f}".format(len(filtered_records)) } Female Teenagers</p>
+            </div>
             """, unsafe_allow_html=True)
 
         if st.button("View Details", key = "All districts"):
@@ -108,9 +109,6 @@ def metric_cards():
 
     style_metric_cards()
 
-#CREATE UPLOAD SUMMARY
-def create_upload_summary(uploaded_arr):
-
 
 # UPLOADED FILE PREVIEW MODAL
 @st.dialog("Review Uploaded File", width="large")
@@ -120,7 +118,7 @@ def upload_xlsx_file(xlsx_file):
         data_frame = pd.read_excel(xlsx_file)
 
         # Validate required columns
-        required_columns = ['Year', 'District', 'Pregnant-Count', 'Male-Educated', 'Female-Educated', 'Male-Teenager', 'Female-Teenager']
+        required_columns = ['interview-year', 'districts', 'currently-pregnant', 'literacy', 'current-age', 'education-level', 'age-range']
         columns_valid, missing_columns = appl.validate_required_columns(data_frame, required_columns)
 
         if not columns_valid:
@@ -130,35 +128,41 @@ def upload_xlsx_file(xlsx_file):
         else:
             #Rename Columns to match what's in database
             data_frame = data_frame.rename(columns={
-                'Year'           : "year", 
-                'District'       : "district", 
-                'Pregnant-Count' : "pregnant_count", 
-                'Male-Educated'  : "male_educated", 
-                'Female-Educated': "female_educated", 
-                'Male-Teenager'  : "male_teenager", 
-                'Female-Teenager': "female_teenager"
+                'interview-year'     : "interview_year", 
+                'districts'          : "district", 
+                'currently-pregnant' : "currently_pregnant", 
+                'literacy'           : "literacy", 
+                'current-age'        : "current_age", 
+                'education-level'    : "education_level", 
+                'age-range'          : "age_range"
             })
 
             array_data = data_frame.to_dict(orient="records")
 
             #Remove unwanted records
-            array_data = [data for data in array_data if data["current-age"] < 20]
+            array_data = [data for data in array_data if data["current_age"] < 20]
 
             # create data summary
-            summary = create_upload_summary(array_data)
+            appl.create_upload_summary(array_data, "current_age")
 
-            #display data summary
-            st.table(summary)
-
-            if st.button("Submit"):    
+            #Input Survey round name
+            survey_wave_name = st.text_input("Enter Survey Wave name", placeholder="2019-20")
+            
+            if st.button("Submit"):
+                if not survey_wave_name:
+                    st.error("Survey wave name is required to identify different surveys periods!")
+                    return;    
+                
                 try:
+                    # Check for existing record with the same Survey wave name
+                    exists = datas.session.query(datas.TeenagePregnancy).filter_by(survey_round= survey_wave_name).first()
+                    
+                    if exists:
+                        st.error(f"This survey wave name already exists.")
+                        return
+                    
                     for data in array_data:
-                        # Check for existing record with the same district and year
-                        exists = datas.session.query(datas.TeenagePregnancy).filter_by(district=data["district"], year=data["year"]).first()
-                        
-                        if exists:
-                            st.error(f"Record for {data['district']} in {data['year']} already exists.")
-                            return
+                        data["survey_round"] = survey_wave_name
         
                     datas.insert_multiple_data(array_data)
                     st.success("All records was added in database successfully!")
@@ -285,6 +289,7 @@ def country_heatmap():
 def main():
     # database access
     db_records = datas.get_table_data()
+
     if "filtered_records" not in st.session_state:
             st.session_state.filtered_records = db_records
 
@@ -313,14 +318,14 @@ def main():
         # district_country_chart()
 
     #right side charts
-    cols3, cols4 = st.columns([2,1])
-    with cols3:
-        #Heat Map
-        country_heatmap()
+    # cols3, cols4 = st.columns([2,1])
+    # with cols3:
+    #     #Heat Map
+    #     country_heatmap()
     
-    with cols4:
-        #LINE CHART
-        teenage_pregnancy_history()
+    # with cols4:
+    #     #LINE CHART
+    #     teenage_pregnancy_history()
 
 
 if __name__ == "__main__":

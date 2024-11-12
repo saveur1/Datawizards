@@ -11,12 +11,12 @@ from functools import reduce
 class TeenageProps(TypedDict):
     tbl_id: int 
     district: str 
-    year: int
-    pregnant_count: int
-    male_educated: int
-    female_educated: int
-    female_teenager: int
-    male_teenager: int
+    interview_year: int
+    age_range: str
+    currently_pregnant: str
+    literacy: str
+    current_age: str
+    education_level: str
 
 
 # DEFINE METADATA AND BASE
@@ -26,53 +26,58 @@ Base = declarative_base()
 
 # DEFINE THE TABLE
 class TeenagePregnancy(Base):
-    __tablename__ = "teenage_pregnancy"
-    tbl_id =   sa.Column("tbl_id", sa.Integer, primary_key=True, autoincrement=True)
-    district = sa.Column("district", sa.String)
-    year =     sa.Column("year", sa.Integer)
-    pregnant_count = sa.Column("pregnant_count", sa.Integer)
-    male_educated  = sa.Column("male_educated", sa.Integer)
-    female_educated  = sa.Column("female_educated", sa.Integer)
-    female_teenager  = sa.Column("female_teenager", sa.Integer)
-    male_teenager  = sa.Column("male_teenager", sa.Integer)
+    __tablename__       = "teenage_pregnancy"
+    tbl_id              = sa.Column("tbl_id", sa.Integer, primary_key=True, autoincrement=True)
+    district            = sa.Column("district", sa.String)
+    interview_year      = sa.Column("interview_year", sa.Integer)
+    age_range           = sa.Column("age_range", sa.String)
+    currently_pregnant  = sa.Column("currently_pregnant", sa.String)
+    literacy            = sa.Column("literacy", sa.String)
+    current_age         = sa.Column("current_age", sa.Integer)
+    education_level     = sa.Column("education_level", sa.String)
+    survey_round        = sa.Column("survey_round", sa.String)
 
     # Define a unique constraint for (district, year)
-    __table_args__ = (
-        UniqueConstraint("district", "year", name="uix_district_year"),
-    )
+    # __table_args__ = (
+    #     UniqueConstraint("district", "year", name="uix_district_year"),
+    # )
 
     def __init__(
             self, 
             district: str, 
-            year: int, 
-            pregnant_count: int, 
-            male_educated: int,
-            female_educated:int, 
-            female_teenager:int, 
-            male_teenager:int
+            interview_year: int, 
+            age_range: str, 
+            currently_pregnant: str,
+            literacy: str, 
+            current_age: int, 
+            education_level: str,
+            survey_round: str
         ):
-        self.district       = district
-        self.year           = year
-        self.pregnant_count = pregnant_count
-        self.male_educated  = male_educated
-        self.female_educated= female_educated
-        self.male_teenager  = male_teenager
-        self.female_teenager= female_teenager
+        self.currently_pregnant = currently_pregnant
+        self.interview_year     = interview_year
+        self.district           = district
+        self.age_range          = age_range
+        self.literacy           = literacy
+        self.current_age        = current_age
+        self.education_level    = education_level
+        self.survey_round       = survey_round
 
     def __repr__(self):
-        return f"TeenagePregnancy(tbl_id={self.tbl_id}, district='{self.district}', year={self.year}, pregnant_count={self.pregnant_count}, male_educated={self.male_educated}, female_educated={self.female_educated}, female_teenager={self.female_teenager}, male_teenager={self.male_teenager})"
+        return (f"TeenagePregnancy(district='{self.district}', interview_year={self.interview_year}, "
+                f"age_range='{self.age_range}', currently_pregnant='{self.currently_pregnant}', "
+                f"literacy='{self.literacy}', current_age={self.current_age}, "
+                f"education_level='{self.education_level}', survey_round='{self.survey_round}')")
 
-    # Return Dictionary data
     def to_dict(self):
         return {
-            "tbl_id": self.tbl_id,
             "district": self.district,
-            "year": self.year,
-            "pregnant_count": self.pregnant_count,
-            "male_educated": self.male_educated,
-            "female_educated": self.female_educated,
-            "female_teenager": self.female_teenager,
-            "male_teenager": self.male_teenager
+            "interview_year": self.interview_year,
+            "age_range": self.age_range,
+            "currently_pregnant": self.currently_pregnant,
+            "literacy": self.literacy,
+            "current_age": self.current_age,
+            "education_level": self.education_level,
+            "survey_round": self.survey_round
         }
     
     @classmethod
@@ -131,16 +136,30 @@ session = Session()
 # FUNCTION TO INSERT ONE DATA
 def insert_single_data( 
             district: str, 
-            year: int, 
-            pregnant_count: int, 
-            male_educated: int,
-            female_educated:int, 
-            female_teenager:int, 
-            male_teenager:int
+            interview_year: int, 
+            age_range: str, 
+            currently_pregnant: str,
+            literacy: str, 
+            current_age: int, 
+            education_level: str,
+            survey_round: str
         ):
-    region = TeenagePregnancy(None, district, year, pregnant_count, male_educated, female_educated, female_teenager, male_teenager)
-    session.add(region)
+    # Create a new instance of TeenagePregnancy with the provided attributes
+    record = TeenagePregnancy(
+        district           = district,
+        interview_year     = interview_year,
+        age_range          = age_range,
+        currently_pregnant = currently_pregnant,
+        literacy           = literacy,
+        current_age        = current_age,
+        education_level    = education_level,
+        survey_round       = survey_round
+    )
+    
+    # Add the new record to the session and commit it to the database
+    session.add(record)
     session.commit()
+
 
 
 # FUNCTION TO INSERT MULTIPLE RECORDS
