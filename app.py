@@ -4,11 +4,8 @@ import pandas as pd
 import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
-from geopy.geocoders import Nominatim
 from time import sleep
-from streamlit_extras.metric_cards import style_metric_cards
 from sqlalchemy.exc import IntegrityError
-from typing import List
 from st_aggrid import AgGrid
 
 #Local Imports
@@ -58,6 +55,9 @@ def project_sidebar(db_records):
 
     if search_district:  #Search Functionality
         districts_groups = appl.search_surveys_district(districts_groups, search_district.lower())
+        if isinstance(districts_groups, str):
+            st.error(districts_groups)
+            return
     else:
         districts_groups = appl.records_grouped_by_district(filtered_records)
 
@@ -89,34 +89,6 @@ def project_sidebar(db_records):
 
             if st.button("View Details", key = district):
                 st.session_state.filtered_records = records
-
-
-#METRICS CARDS
-def metric_cards():
-    filtered_records = st.session_state.filtered_records
-    pregnant_teenagers = appl.count_frequency(filtered_records, "currently_pregnant", "yes")
-
-    #totoal teenagers and total educated teenagers
-    total_educated = appl.count_frequency(filtered_records, "literacy", "cannot read at all", reverse=True)
-    total_teenager = len(filtered_records)
-
-
-    percentage_educated = (total_educated * 100)//total_teenager
-
-    #Pregnancy increase
-    pregnancy_increase = appl.calculate_increate(filtered_records, "pregnant_count")
-    educated_increase = appl.calculate_increate(filtered_records, "literacy_count")
-    teenage_increase = appl.calculate_increate(filtered_records, "women_count")
-
-    # Create columns
-    col1, col2, col3 = st.columns(3)
-
-    # Metrics cards over different columns
-    col1.metric("Teenage Pregnancy", "{:,}".format(int(pregnant_teenagers)), "{:,.2f}%".format(pregnancy_increase))
-    col2.metric("Literate Teenagers", "{:,}%".format(int(percentage_educated)), "{:,.2f}%".format(educated_increase))
-    col3.metric("Teenage Population", "{:,}".format(int(total_teenager)), "{:,.2f}%".format(teenage_increase))
-
-    style_metric_cards()
 
 
 # UPLOADED FILE PREVIEW MODAL
@@ -196,10 +168,11 @@ def upload_xlsx_file(xlsx_file):
                     datas.session.rollback()
                     raise e  # Re-raise other exceptions
 
-
 def current_pregnancy_chart():
+    filtered_records = st.session_state.filtered_records
+    pregnant_count = appl.count_frequency(filtered_records, "currently_pregnant", "yes")
     trace_colors =  ['rgb(217, 217, 217)', 'rgb(216, 7, 7)']
-    trace = go.Pie(labels=['Not Pregnant', 'Pregnant Teenage'], values=[12, 45], hole=0.5, marker_colors= trace_colors)
+    trace = go.Pie(labels=['Not Pregnant', 'Pregnant Teenage'], values=[len(filtered_records) - pregnant_count, pregnant_count], hole=0.5, marker_colors= trace_colors)
 
     # Create the layout for the chart
     layout = go.Layout(
@@ -214,7 +187,7 @@ def current_pregnancy_chart():
         height=250,  # Set the desired height
         annotations=[
             dict(
-                text=f'{ "{:,}".format(15500) }',
+                text=f'{ "{:,} <br />Women".format(len(filtered_records)) }',
                 x=0.5, y=0.5, font_size=20, showarrow=False
             )
         ]
@@ -279,10 +252,9 @@ def country_heatmap():
     results = []
 
     for district, records in grouped_records.items():
-        pregnant_count = sum(appl.object_values(records, "pregnant_count"))
+        pregnant_count = appl.count_frequency(records, "currently_pregnant", "yes")
 
         # Geocode the district name to get latitude and longitude
-        
         location = datas.coordinates_for_district(district)
         
         if location:
@@ -327,7 +299,7 @@ def main():
             upload_xlsx_file(uploaded_file)
 
         #Metric cards
-        metric_cards()
+        appl.metric_cards()
 
     with cols2:
         # PIE CHART
@@ -336,15 +308,15 @@ def main():
         #LINE CHART
         # district_country_chart()
 
-    #right side charts
-    # cols3, cols4 = st.columns([2,1])
-    # with cols3:
-    #     #Heat Map
-    #     country_heatmap()
+    # right side charts
+    cols3, cols4 = st.columns([2,1])
+    with cols3:
+        #Heat Map
+        country_heatmap()
     
-    # with cols4:
-    #     #LINE CHART
-    #     teenage_pregnancy_history()
+    with cols4:
+        #LINE CHART
+        teenage_pregnancy_history()
 
 
 if __name__ == "__main__":

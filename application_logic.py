@@ -2,6 +2,7 @@ import streamlit as st
 from typing import List
 from collections import defaultdict
 import pandas as pd
+from streamlit_extras.metric_cards import style_metric_cards
 
 # Define custom styles for metrics
 def custom_metric(label, value, color):
@@ -14,19 +15,23 @@ def custom_metric(label, value, color):
 
 
 def calculate_increate(data: List, attr1:str):
-    # Sort data by year
-    data_sorted = sorted(data, key=lambda x: x["interview_year"])
+    try:
+        # Sort data by year
+        data_sorted = sorted(data, key=lambda x: x["interview_year"])
 
-    # Get pregnancy counts for the earliest and latest year
-    summary = create_upload_summary(data_sorted, "survey_round")
-    earliest_data = summary[0][attr1]
-    latest_data = summary[-1][attr1]
+        # Get pregnancy counts for the earliest and latest year
+        summary = create_upload_summary(data_sorted, "survey_round")
+        earliest_data = summary[0][attr1]
+        latest_data = summary[-1][attr1]
 
-    # Calculate absolute and percentage increase
-    absolute_increase = latest_data - earliest_data
-    percentage_increase = (absolute_increase / earliest_data) * 100
+        # Calculate absolute and percentage increase
+        absolute_increase = latest_data - earliest_data
+        percentage_increase = (absolute_increase / earliest_data) * 100
 
-    return percentage_increase
+        return percentage_increase
+    
+    except:
+        return 0
 
 
 def validate_required_columns(df, required_columns):
@@ -107,3 +112,31 @@ def search_surveys_district(surveys: List, query:str):
         return matching_surveys
     else:
         return f"No districts found containing '{query}'"
+    
+
+#METRICS CARDS
+def metric_cards():
+    filtered_records = st.session_state.filtered_records
+    pregnant_teenagers = count_frequency(filtered_records, "currently_pregnant", "yes")
+
+    #totoal teenagers and total educated teenagers
+    total_educated = count_frequency(filtered_records, "literacy", "cannot read at all", reverse=True)
+    total_teenager = len(filtered_records)
+
+
+    percentage_educated = (total_educated * 100)//total_teenager
+
+    #Pregnancy increase
+    pregnancy_increase = calculate_increate(filtered_records, "pregnant_count")
+    educated_increase = calculate_increate(filtered_records, "literacy_count")
+    teenage_increase = calculate_increate(filtered_records, "women_count")
+
+    # Create columns
+    col1, col2, col3 = st.columns(3)
+
+    # Metrics cards over different columns
+    col1.metric("Teenage Pregnancy", "{:,}".format(int(pregnant_teenagers)), "{:,.2f}%".format(pregnancy_increase))
+    col2.metric("Literate Teenagers", "{:,}%".format(int(percentage_educated)), "{:,.2f}%".format(educated_increase))
+    col3.metric("Teenage Population", "{:,}".format(int(total_teenager)), "{:,.2f}%".format(teenage_increase))
+
+    style_metric_cards(background_color="auto")

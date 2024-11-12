@@ -177,7 +177,7 @@ def get_table_data()-> List[TeenageProps]:
 
 # FUNCTION TO RETRIEVE COORDINATES BASED ON DISTRICT
 def coordinates_for_district(district: str):
-    result = Regions.get_district_coordinates(session, district)
+    result = Regions.get_district_coordinates(session, district.capitalize())
     return result
 
 # INSERT INTO REGIONS
