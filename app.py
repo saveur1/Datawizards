@@ -50,8 +50,9 @@ def main():
         # Pie chart
         pcharts.current_pregnancy_chart()
 
-        # Line chart
-        # district_country_chart()
+    #introduce small space
+    st.write("")
+
 
     # right side charts
     cols3, cols4 = st.columns([2,1])
@@ -63,35 +64,21 @@ def main():
         #LINE CHART
         pcharts.teenage_pregnancy_history(db_records)
 
+    #introduce small space
+    st.write("")
+
     cols5, cols6 = st.columns([2,1])
     with cols5:
-        states = [
-        {
-             "states": "Alabama",
-             "population": 12000
-        },
-        {
-             "states": "Arkansas",
-             "population": 15000
-        }]
-        df_selected_year_sorted = pd.DataFrame(states)
+        sub_col1, sub_col2 = st.columns(2)
+        with sub_col1:
+            pcharts.education_statistics()
 
-        st.markdown('#### Education levels')
-        st.dataframe(df_selected_year_sorted,
-                column_order=("states", "population"),
-                hide_index=True,
-                width=None,
-                column_config={
-                    "states": st.column_config.TextColumn(
-                        "States",
-                    ),
-                    "population": st.column_config.ProgressColumn(
-                        "Population",
-                        format="%f",
-                        min_value=0,
-                        max_value=max(df_selected_year_sorted.population),
-                    )}
-                )
+        with sub_col2:
+             pcharts.provinces_statistics()
+
+    with cols6:
+        # Line chart
+        pcharts.district_country_chart()
 
 
 if __name__ == "__main__":

@@ -53,11 +53,11 @@ def records_based_onyears(records:List, years: List, key_name: str)->List:
     return [data for data in records if data[key_name] in years]
 
 
-def records_grouped_by_district(records: List):      
+def records_grouped_by_district(records: List, attr: str = "district"):      
         # Use defaultdict to group by district
         grouped_data = defaultdict(list)
         for record in records:
-            grouped_data[str(record["district"]).lower()].append(record)
+            grouped_data[str(record[attr]).lower()].append(record)
         
         # Convert defaultdict to a regular dict
         return dict(grouped_data)
@@ -80,7 +80,7 @@ def create_upload_summary(arr_records: List, group_name: str):
         "women_count": 0,
         "literacy_count": 0,
         "year": 0,
-        "survey_round": ""
+        "survey_round": None
     })
 
     for record in arr_records:
@@ -90,7 +90,8 @@ def create_upload_summary(arr_records: List, group_name: str):
         filter_name = record[group_name]
 
         #Survey Round
-        result[filter_name]["survey_round"] = record["survey_round"]
+        if group_name == "survey_round":
+            result[filter_name]["survey_round"] = record["survey_round"]
 
         #Year
         result[filter_name]["year"] = record["interview_year"]

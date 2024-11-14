@@ -9,6 +9,7 @@ import plotly.graph_objects as go
 import data_injection as datas
 import application_logic as appl
 from typing import List
+from collections import defaultdict
 
 def current_pregnancy_chart():
     # get data from session
@@ -171,3 +172,110 @@ def country_heatmap():
         df, use_container_width=True, 
         zoom=7 ,height=400, #zoom level 7 and 11 works well
     )
+
+def education_statistics():
+    records = st.session_state.filtered_records
+    #education level grouping
+    education_groups = appl.records_grouped_by_district(records, "education_level")
+    education_levels = defaultdict(list)
+    for level, records in education_groups.items():
+        education_levels["Education Level"].append(str(level).capitalize()),
+        education_levels["Number of Women"].append(len(records))
+    
+    default_ed = {
+        "Education Level": [],
+        "Number of Women": []
+    }
+
+    df_education = pd.DataFrame(dict(education_levels) or default_ed)
+
+    # Create the bar chart using Plotly
+    fig = go.Figure()
+
+    fig.add_trace(go.Bar(
+        x=df_education["Number of Women"],
+        y=df_education["Education Level"],
+        text=[f'{x:,} Women' for x in df_education["Number of Women"]],
+        textposition='inside',
+        orientation='h',
+        marker_color='#ff4b4b',
+        hovertemplate='%{y}: %{x:,.0f} Women<extra></extra>'
+    ))
+
+    # Update layout
+    fig.update_layout(
+        title=dict(text="<i>Education level summary</i>", x=0.5,xanchor="center"),
+        height=300,
+        margin=dict(t=60, b=50, l=0, r=30),
+        xaxis=dict(
+            showticklabels=False,  # Hide x-axis labels as they're redundant with the bar labels
+            showgrid=False,
+            zeroline=False
+        ),
+        yaxis=dict(
+            tickmode='array',
+            ticktext=df_education["Education Level"],
+            tickvals=df_education["Education Level"],
+            showgrid=False
+        ),
+        plot_bgcolor='white',
+        showlegend=False
+    )
+
+    # Display the plot in Streamlit
+    st.plotly_chart(fig, use_container_width=True, key="education_summary")
+    
+
+def provinces_statistics():
+    records = st.session_state.filtered_records
+
+    #education level grouping
+    regions_groups = appl.records_grouped_by_district(records, "regions")
+    regions = defaultdict(list)
+
+    for region, records in regions_groups.items():
+        regions["Region"].append(str(region).capitalize()),
+        regions["Women Asked"].append(len(records))
+
+    default_regions = {
+        "Region": [],
+        "Women Asked": []
+    }
+
+    df = pd.DataFrame(regions or default_regions)
+
+    # Create the bar chart using Plotly
+    fig = go.Figure()
+
+    fig.add_trace(go.Bar(
+        x=df['Women Asked'],
+        y=df['Region'],
+        text=[f'${x}k' for x in df['Women Asked']],
+        textposition='inside',
+        orientation='h',
+        marker_color='#ff4b4b',  # Blue color similar to the image
+        hovertemplate='%{y}: $%{x:.1f}k<extra></extra>'
+    ))
+
+    # Update layout
+    fig.update_layout(
+        title=dict(text="<i>Regions sample summary</i>", x=0.5,xanchor="center"),
+        height=300,
+        margin=dict(t=60, b=50, l=0, r=30),
+        xaxis=dict(
+            showticklabels=False,  # Hide x-axis labels as they're redundant with the bar labels
+            showgrid=False,
+            zeroline=False
+        ),
+        yaxis=dict(
+            tickmode='array',
+            ticktext=df['Region'],
+            tickvals=df['Region'],
+            showgrid=False
+        ),
+        plot_bgcolor='white',
+        showlegend=False
+    )
+
+    # Display the plot in Streamlit
+    st.plotly_chart(fig, use_container_width=True,  key="regions_summary")

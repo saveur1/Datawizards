@@ -25,6 +25,7 @@ class TeenageProps(TypedDict):
     current_age: str
     education_level: str
     survey_round: str
+    regions: str
 
 
 # DEFINE METADATA AND BASE
@@ -44,6 +45,7 @@ class TeenagePregnancy(Base):
     current_age         = sa.Column("current_age", sa.Integer)
     education_level     = sa.Column("education_level", sa.String)
     survey_round        = sa.Column("survey_round", sa.String)
+    regions             = sa.Column("regions", sa.String)
 
     # Define a unique constraint for (district, year)
     # __table_args__ = (
@@ -59,7 +61,8 @@ class TeenagePregnancy(Base):
             literacy: str, 
             current_age: int, 
             education_level: str,
-            survey_round: str
+            survey_round: str,
+            regions: str
         ):
         self.currently_pregnant = currently_pregnant
         self.interview_year     = interview_year
@@ -69,12 +72,13 @@ class TeenagePregnancy(Base):
         self.current_age        = current_age
         self.education_level    = education_level
         self.survey_round       = survey_round
+        self.regions            = regions
 
     def __repr__(self):
         return (f"TeenagePregnancy(district='{self.district}', interview_year={self.interview_year}, "
                 f"age_range='{self.age_range}', currently_pregnant='{self.currently_pregnant}', "
                 f"literacy='{self.literacy}', current_age={self.current_age}, "
-                f"education_level='{self.education_level}', survey_round='{self.survey_round}')")
+                f"education_level='{self.education_level}', survey_round='{self.survey_round}, regions='{self.regions}')")
 
     def to_dict(self):
         return {
@@ -85,7 +89,8 @@ class TeenagePregnancy(Base):
             "literacy": self.literacy,
             "current_age": self.current_age,
             "education_level": self.education_level,
-            "survey_round": self.survey_round
+            "survey_round": self.survey_round,
+            "regions": self.regions
         }
     
     @classmethod
@@ -150,7 +155,8 @@ def insert_single_data(
             literacy: str, 
             current_age: int, 
             education_level: str,
-            survey_round: str
+            survey_round: str,
+            regions: str
         ):
     # Create a new instance of TeenagePregnancy with the provided attributes
     record = TeenagePregnancy(
@@ -161,7 +167,8 @@ def insert_single_data(
         literacy           = literacy,
         current_age        = current_age,
         education_level    = education_level,
-        survey_round       = survey_round
+        survey_round       = survey_round,
+        regions            = regions
     )
     
     # Add the new record to the session and commit it to the database
@@ -218,30 +225,35 @@ def filter_incoming_data(records: List):
 @st.dialog("Review Uploaded File", width="large")
 def upload_xlsx_file(xlsx_file):
     if xlsx_file is not None:
+        columns_map = {
+                'v007' : "interview_year", 
+                'v023' : "district", 
+                'v213' : "currently_pregnant", 
+                'v155' : "literacy", 
+                'v012' : "current_age", 
+                'v106' : "education_level", 
+                'v013' : "age_range",
+                'v024' : "regions"
+        }
         # data table
         data_frame = pd.read_excel(xlsx_file)
 
         # Validate required columns
-        required_columns = ['interview-year', 'districts', 'currently-pregnant', 'literacy', 'current-age', 'education-level', 'age-range']
+        required_columns = ['v007', 'v023', 'v213', 'v155', 'v012', 'v106', 'v013', "v024"]
         columns_valid, missing_columns = appl.validate_required_columns(data_frame, required_columns)
+        
 
         if not columns_valid:
             st.error(f"Invalid file uploaded. Missing required columns: {', '.join(missing_columns)}")
+            st.write(columns_map)
             return
         
         else:
             #Rename Columns to match what's in database
-            data_frame = data_frame.rename(columns={
-                'interview-year'     : "interview_year", 
-                'districts'          : "district", 
-                'currently-pregnant' : "currently_pregnant", 
-                'literacy'           : "literacy", 
-                'current-age'        : "current_age", 
-                'education-level'    : "education_level", 
-                'age-range'          : "age_range"
-            })
+            data_frame = data_frame.rename(columns= columns_map )
 
-            array_data = data_frame.to_dict(orient="records")
+            # Convert to array of dictionaries
+            array_data = data_frame[list(columns_map.values())].to_dict(orient="records")
 
             #Remove unwanted records
             array_data = filter_incoming_data(array_data)
