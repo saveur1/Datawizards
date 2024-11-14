@@ -172,7 +172,8 @@ def project_sidebar(db_records, theme):
     
 
     # Display logo
-    st.logo(f"{'./data_wizards_light.png' if theme["base"] == "light" else './data_wizards_dark.png'}")
+    if theme:
+        st.logo(f"{'./data_wizards_light.png' if theme["base"] == "light" else './data_wizards_dark.png'}")
     
     # Sub Title
     st.markdown("<p style='text-align: center;'>Teenage Pregnancy</p>", unsafe_allow_html=True)
