@@ -2,10 +2,17 @@ import sqlalchemy as sa
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.schema import UniqueConstraint
-from collections import defaultdict
 from typing import TypedDict
 from typing import List
-from functools import reduce
+
+import streamlit as st
+import pandas as pd
+from time import sleep
+from sqlalchemy.exc import IntegrityError
+from st_aggrid import AgGrid
+
+#Local Imports
+import application_logic as appl
 
 # DEFINING TEENAGE PREGNANCY TYPES
 class TeenageProps(TypedDict):
@@ -17,6 +24,7 @@ class TeenageProps(TypedDict):
     literacy: str
     current_age: str
     education_level: str
+    survey_round: str
 
 
 # DEFINE METADATA AND BASE
@@ -187,42 +195,98 @@ def insert_regions(records: List[TeenageProps]):
         session.add(record)
     session.commit()
 
-# FUNCTION TO FILTER DATA BEFORE INSERTION
-def filter_incoming_data(raw_records: List)-> List:
-    result = defaultdict(lambda: {
-            "district": None, 
-            "year": 0, 
-            "pregnant_count": 0, 
-            "male_educated": 0,
-            "female_educated":0, 
-            "female_teenager":0, 
-            "male_teenager":0
-        })
+def clean_district(district: str):
+    if "rural" in district.lower() or "urban" in district.lower():
+        cleaned = district.lower()
+        cleaned = cleaned.replace("rural", "").replace("urban", "").replace("-", "")
+        return " ".join(cleaned.split()).strip()
     
-    for record in raw_records:
-        district = record["districts"]  #v023 contains districts
-        years = record["years"]  #v007 contains years
-        result[years][district]["district"] = district
-        result[years][district]["year"] = record["years"] #v007 contains years
+    return district
 
-        # Male Teenagers Count
-        if 14 <= record["age"] <= 18 and record["gender"] == "male":
-            result[district]["male_teenager"] += 1
+# FILTER DATA AND REMOVE UNWANTED
+def filter_incoming_data(records: List):
+    result = []
+    for record in records:
+        if int(str(record["current_age"]).strip() or "30") < 20:
+            district = clean_district(record["district"])
+            record["district"] = district
+            result.append(record)
 
-        # # Female Teenagers Count
-        # if 14 <= record["age"] <= 18 and record["gender"] == "female":
-        #     result[district]["female_teenager"] += 1
+    return result
 
-        # # Female Educated Count
-        # if 14 <= record["age"] <= 18 and record["gender"] == "female":
-        #     result[district]["female_teenager"] += 1
+# UPLOADED FILE PREVIEW MODAL
+@st.dialog("Review Uploaded File", width="large")
+def upload_xlsx_file(xlsx_file):
+    if xlsx_file is not None:
+        # data table
+        data_frame = pd.read_excel(xlsx_file)
 
-        # # Male Educated Count
-        # if 14 <= record["age"] <= 18 and record["gender"] == "female":
-        #     result[district]["female_teenager"] += 1
+        # Validate required columns
+        required_columns = ['interview-year', 'districts', 'currently-pregnant', 'literacy', 'current-age', 'education-level', 'age-range']
+        columns_valid, missing_columns = appl.validate_required_columns(data_frame, required_columns)
 
-        # # Pregnant count
-        # if record["current_pregnant"] == "yes":
-        #     result[district]["pregnant_count"] += 1
+        if not columns_valid:
+            st.error(f"Invalid file uploaded. Missing required columns: {', '.join(missing_columns)}")
+            return
+        
+        else:
+            #Rename Columns to match what's in database
+            data_frame = data_frame.rename(columns={
+                'interview-year'     : "interview_year", 
+                'districts'          : "district", 
+                'currently-pregnant' : "currently_pregnant", 
+                'literacy'           : "literacy", 
+                'current-age'        : "current_age", 
+                'education-level'    : "education_level", 
+                'age-range'          : "age_range"
+            })
 
-    return list(result.values())
+            array_data = data_frame.to_dict(orient="records")
+
+            #Remove unwanted records
+            array_data = filter_incoming_data(array_data)
+
+            # create data summary
+            summary = appl.create_upload_summary(array_data, "current_age")
+            df = pd.DataFrame(summary)
+
+            df = df.rename(columns={
+                "ages": "Ages", 
+                "pregnant_count": "Pregnancy Count", 
+                "women_count": "Total Women",
+                "literacy_count": "Literate Count"
+            })
+
+            AgGrid(df, fit_columns_on_grid_load= True, height=180)
+
+            #Input Survey round name
+            survey_wave_name = st.text_input("Enter Survey Wave name", placeholder="2019-20")
+            
+            if st.button("Submit"):
+                if not survey_wave_name:
+                    st.error("Survey wave name is required to identify different surveys periods!")
+                    return;    
+                
+                try:
+                    # Check for existing record with the same Survey wave name
+                    exists = session.query(TeenagePregnancy).filter_by(survey_round= survey_wave_name).first()
+                    
+                    if exists:
+                        st.error(f"This survey wave name already exists.")
+                        return
+                    
+                    for data in array_data:
+                        data["survey_round"] = survey_wave_name
+        
+                    insert_multiple_data(array_data)
+                    st.success("All records was added in database successfully!")
+                    sleep(3)
+                    st.rerun()
+                
+                except IntegrityError:
+                    st.error("Error: Some entries for district and year Already exists. Each district-year combination must be unique.")
+                    session.rollback()
+                
+                except Exception as e:
+                    session.rollback()
+                    raise e  # Re-raise other exceptions
