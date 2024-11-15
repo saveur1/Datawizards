@@ -1,5 +1,4 @@
 import streamlit as st
-import pandas as pd
 
 #Local Imports
 import data_injection as datas
@@ -25,6 +24,9 @@ def main():
 
     if "session_district" not in st.session_state:
             st.session_state.session_district = "All Districts"
+
+    if "years_age_filter" not in st.session_state:
+            st.session_state.years_age_filter = db_records
 
     # project sidebar
     with st.sidebar:
@@ -61,12 +63,11 @@ def main():
     cols3, cols4 = st.columns([2,1])
     with cols3:
         #Heat Map
-        pcharts.pregnancy_choropleth_map(db_records)
-        # pcharts.country_heatmap()
+        pcharts.pregnancy_choropleth_map()
     
     with cols4:
         #LINE CHART
-        pcharts.teenage_pregnancy_history(db_records)
+        pcharts.teenage_pregnancy_history()
 
     #introduce small space
     st.write("")
@@ -78,11 +79,10 @@ def main():
             pcharts.education_statistics()
 
         with sub_col2:
-             pcharts.provinces_statistics(db_records)
+             pcharts.provinces_statistics()
 
     with cols6:
-        # Line chart
-        pcharts.district_country_chart()
+        pcharts.wealth_quantile_chart()
 
 
 if __name__ == "__main__":

@@ -1,7 +1,6 @@
 import sqlalchemy as sa
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.schema import UniqueConstraint
 from typing import TypedDict
 from typing import List
 
@@ -26,6 +25,7 @@ class TeenageProps(TypedDict):
     education_level: str
     survey_round: str
     regions: str
+    wealth_quintile: str
 
 
 # DEFINE METADATA AND BASE
@@ -46,11 +46,7 @@ class TeenagePregnancy(Base):
     education_level     = sa.Column("education_level", sa.String)
     survey_round        = sa.Column("survey_round", sa.String)
     regions             = sa.Column("regions", sa.String)
-
-    # Define a unique constraint for (district, year)
-    # __table_args__ = (
-    #     UniqueConstraint("district", "year", name="uix_district_year"),
-    # )
+    wealth_quintile     = sa.Column("wealth_quintile", sa.String, nullable=True)
 
     def __init__(
             self, 
@@ -62,7 +58,8 @@ class TeenagePregnancy(Base):
             current_age: int, 
             education_level: str,
             survey_round: str,
-            regions: str
+            regions: str,
+            wealth_quintile: str = None
         ):
         self.currently_pregnant = currently_pregnant
         self.interview_year     = interview_year
@@ -73,12 +70,13 @@ class TeenagePregnancy(Base):
         self.education_level    = education_level
         self.survey_round       = survey_round
         self.regions            = regions
+        self.wealth_quintile    = wealth_quintile
 
     def __repr__(self):
         return (f"TeenagePregnancy(district='{self.district}', interview_year={self.interview_year}, "
                 f"age_range='{self.age_range}', currently_pregnant='{self.currently_pregnant}', "
                 f"literacy='{self.literacy}', current_age={self.current_age}, "
-                f"education_level='{self.education_level}', survey_round='{self.survey_round}, regions='{self.regions}')")
+                f"education_level='{self.education_level}', survey_round='{self.survey_round}, regions='{self.regions}, wealth_quitile='{ self.wealth_quintile }')")
 
     def to_dict(self):
         return {
@@ -90,7 +88,8 @@ class TeenagePregnancy(Base):
             "current_age": self.current_age,
             "education_level": self.education_level,
             "survey_round": self.survey_round,
-            "regions": self.regions
+            "regions": self.regions,
+            "wealth_quintile": self.wealth_quintile
         }
     
     @classmethod
@@ -99,82 +98,10 @@ class TeenagePregnancy(Base):
         return [record.to_dict() for record in records]
 
 
-# DEFINE THE REGIONS TABLE
-class Regions(Base):
-    __tablename__ = "regions"
-    region_id =   sa.Column("region_id", sa.Integer, primary_key=True, autoincrement=True)
-    district = sa.Column("district", sa.String)
-    longitude =     sa.Column("longitude", sa.Double)
-    latitude = sa.Column("latitude", sa.Double)
-
-    # Define a unique constraint for (district, year)
-    __table_args__ = (
-        UniqueConstraint("district", name="uix_district"),
-    )
-
-    def __init__(
-            self, 
-            district: str, 
-            longitude: float, 
-            latitude: float,
-        ):
-        self.district  = district
-        self.longitude = longitude
-        self.latitude  = latitude
-
-    def __repr__(self):
-        return f"Regions(region_id={self.region_id}, district='{self.district}', latitude={self.latitude}, longitude={self.longitude})"
-
-    # Return Dictionary data
-    def to_dict(self):
-        return {
-            "region_id": self.region_id,
-            "district": self.district,
-            "latitude": self.latitude,
-            "longitude": self.longitude
-        }
-    
-    @classmethod
-    def get_district_coordinates(self, session, district):
-        record = session.query(self).filter(self.district == district).first()
-        return record.to_dict()
-
-
 # BASIC CONFIGURATIONS
 engine = sa.create_engine("sqlite:///datawizards.db")
 Session = sessionmaker(bind= engine)
 session = Session()
-
-
-# FUNCTION TO INSERT ONE DATA
-def insert_single_data( 
-            district: str, 
-            interview_year: int, 
-            age_range: str, 
-            currently_pregnant: str,
-            literacy: str, 
-            current_age: int, 
-            education_level: str,
-            survey_round: str,
-            regions: str
-        ):
-    # Create a new instance of TeenagePregnancy with the provided attributes
-    record = TeenagePregnancy(
-        district           = district,
-        interview_year     = interview_year,
-        age_range          = age_range,
-        currently_pregnant = currently_pregnant,
-        literacy           = literacy,
-        current_age        = current_age,
-        education_level    = education_level,
-        survey_round       = survey_round,
-        regions            = regions
-    )
-    
-    # Add the new record to the session and commit it to the database
-    session.add(record)
-    session.commit()
-
 
 
 # FUNCTION TO INSERT MULTIPLE RECORDS
@@ -190,17 +117,6 @@ def get_table_data()-> List[TeenageProps]:
     result = TeenagePregnancy.get_all_as_dict(session)
     return result
 
-# FUNCTION TO RETRIEVE COORDINATES BASED ON DISTRICT
-def coordinates_for_district(district: str):
-    result = Regions.get_district_coordinates(session, district.capitalize())
-    return result
-
-# INSERT INTO REGIONS
-def insert_regions(records: List[TeenageProps]):
-    for data in records:
-        record = Regions(**data)
-        session.add(record)
-    session.commit()
 
 def clean_district(district: str):
     if "rural" in district.lower() or "urban" in district.lower():
@@ -243,7 +159,8 @@ def upload_xlsx_file(xlsx_file):
                 'v012' : "current_age", 
                 'v106' : "education_level", 
                 'v013' : "age_range",
-                'v024' : "regions"
+                'v024' : "regions",
+                'v190' : "wealth_quintile"
         }
         # data table
         data_frame = pd.read_excel(xlsx_file)
@@ -280,7 +197,10 @@ def upload_xlsx_file(xlsx_file):
                 "literacy_count": "Literate Count"
             })
 
-            AgGrid(df, fit_columns_on_grid_load= True, height=180)
+            columns_to_display = ["Ages", "Pregnancy Count", "Literate Count","Total Women"]
+            filtered_df = df[columns_to_display]
+
+            AgGrid(filtered_df, fit_columns_on_grid_load= True, height=180)
 
             #Input Survey round name
             survey_wave_name = st.text_input("Enter Survey Wave name", placeholder="2019-20")

@@ -1,7 +1,6 @@
 import streamlit as st
-from typing import List, Dict
+from typing import List
 from collections import defaultdict
-import pandas as pd
 from streamlit_extras.metric_cards import style_metric_cards
 
 # Define custom styles for metrics
@@ -91,7 +90,8 @@ def create_upload_summary(arr_records: List, group_name: str):
         filter_name = str(record[group_name]).lower()
 
         #Survey Round
-        result[filter_name]["survey_round"] = record["survey_round"]
+        if group_name == "survey_round":
+            result[filter_name]["survey_round"] = record["survey_round"]
 
         #District
         result[filter_name]["district"] = filter_name
@@ -204,6 +204,7 @@ def project_sidebar(db_records, theme):
 
     #Filter records by age Options
     filtered_records = records_based_onyears(filtered_records, ages_filter, "current_age")
+    st.session_state.years_age_filter = filtered_records
 
     # Group districts
     districts_groups = records_grouped_by_district(filtered_records)
