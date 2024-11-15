@@ -210,13 +210,23 @@ def clean_district(district: str):
     
     return district
 
+
+def clean_regions(region: str):
+    if "city" in region.lower():
+        return region.lower().replace("city", "").strip()
+    
+    return region
+
+
 # FILTER DATA AND REMOVE UNWANTED
 def filter_incoming_data(records: List):
     result = []
     for record in records:
         if int(str(record["current_age"]).strip() or "30") < 20:
             district = clean_district(record["district"])
+            region = clean_regions(record["regions"])
             record["district"] = district
+            record["regions"] = region
             result.append(record)
 
     return result
@@ -260,6 +270,7 @@ def upload_xlsx_file(xlsx_file):
 
             # create data summary
             summary = appl.create_upload_summary(array_data, "current_age")
+            
             df = pd.DataFrame(summary)
 
             df = df.rename(columns={

@@ -1,0 +1,22 @@
+.all {
+    margin:0;
+    padding: 0;
+}
+.district {
+    font-weight: normal;
+    color: rgb(216, 7, 7)
+}
+.plot-container>div {
+    box-shadow: 0 0 4px #cccccc;
+    padding-bottom: 20px !important;
+} 
+
+/* .mapboxgl-map {
+    box-shadow: 0 0 4px #cccccc;
+    padding: 10px !important;
+} */
+
+.st-emotion-cache-12fmjuu {
+    background-color: transparent !important;
+    color: #cc1a1a;
+}

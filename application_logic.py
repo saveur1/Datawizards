@@ -1,5 +1,5 @@
 import streamlit as st
-from typing import List
+from typing import List, Dict
 from collections import defaultdict
 import pandas as pd
 from streamlit_extras.metric_cards import style_metric_cards
@@ -73,25 +73,28 @@ def count_frequency(table_datas: List, column: str, value, array_values: bool = 
 #CREATE UPLOAD SUMMARY
 def create_upload_summary(arr_records: List, group_name: str):
         
-    # Initialize a defaultdict with two levels of nesting
+    # Initialize a defaultdict with default values
     result = defaultdict(lambda: {
-        "ages": 0, 
-        "pregnant_count": 0, 
-        "women_count": 0,
-        "literacy_count": 0,
-        "year": 0,
-        "survey_round": None
-    })
+                "ages": 0, 
+                "pregnant_count": 0, 
+                "women_count": 0,
+                "literacy_count": 0,
+                "survey_round": "",
+                "year": 0,
+                "district": ""
+            })
 
     for record in arr_records:
         if record["age_range"] != "15-19":
             continue
 
-        filter_name = record[group_name]
+        filter_name = str(record[group_name]).lower()
 
         #Survey Round
-        if group_name == "survey_round":
-            result[filter_name]["survey_round"] = record["survey_round"]
+        result[filter_name]["survey_round"] = record["survey_round"]
+
+        #District
+        result[filter_name]["district"] = filter_name
 
         #Year
         result[filter_name]["year"] = record["interview_year"]
@@ -100,17 +103,18 @@ def create_upload_summary(arr_records: List, group_name: str):
         result[filter_name]["ages"] = record["current_age"]
 
         #Pregnant count
-        if str(record["currently_pregnant"]).lower() == "yes":
+        if record["currently_pregnant"].lower() == "yes":
             result[filter_name]["pregnant_count"] += 1
 
         #Women count
         result[filter_name]["women_count"] += 1
 
         #Female educated count
-        if record["literacy"] and str(record["literacy"]).lower() != "cannot read at all":
+        if str(record["literacy"]).lower() != "cannot read at all":
             result[filter_name]["literacy_count"] += 1
 
     return list(dict(result).values())
+
 
 # Function to search by partial district name
 def search_surveys_district(surveys: List, query:str):
@@ -174,7 +178,7 @@ def project_sidebar(db_records, theme):
 
     # Display logo
     if theme:
-        st.logo(f"{'./data_wizards_light.png' if theme["base"] == "light" else './data_wizards_dark.png'}")
+        st.logo(f"{'./static/data_wizards_light.png' if theme["base"] == "light" else './static/data_wizards_dark.png'}")
     
     # Sub Title
     st.markdown("<p style='text-align: center;'>Teenage Pregnancy</p>", unsafe_allow_html=True)

@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
+import json
 
 #Local Imports
 import data_injection as datas
@@ -83,17 +84,16 @@ def teenage_pregnancy_history(records: List):
     women_records = [ data["women_count"]  for data in summary ]
 
     survey_pregnacy_result = appl.calculate_preg_percentages(survey_pregnancies, women_records)
-    percent_sign = "(%)"
 
-    left, middle= st.columns(2)
-    if left.button("Percent(%)", use_container_width=True):
-        survey_pregnacy_result = appl.calculate_preg_percentages(survey_pregnancies, women_records)
-        percent_sign = "(%)"
+    # left, middle= st.columns(2)
+    # if left.button("Percent(%)", use_container_width=True):
+    #     survey_pregnacy_result = appl.calculate_preg_percentages(survey_pregnancies, women_records)
+    #     percent_sign = "(%)"
 
     
-    if middle.button("Plain Data", use_container_width=True):
-        survey_pregnacy_result = survey_pregnancies
-        percent_sign = ""
+    # if middle.button("Plain Data", use_container_width=True):
+    #     survey_pregnacy_result = survey_pregnancies
+    #     percent_sign = ""
 
     # Plot history chart
     fig=go.Figure()
@@ -106,9 +106,8 @@ def teenage_pregnancy_history(records: List):
     ))
 
     fig.update_layout(
-        width=300,
-        height=340,
-        title=dict(text=f"<i>Pregnancy History for { st.session_state.session_district }{ percent_sign }</i>", x=0.5,xanchor="center"),
+        height=400,
+        title=dict(text=f"<i>Pregnancy History for { st.session_state.session_district }(%)</i>", x=0.5,xanchor="center"),
         yaxis_title="Pregnant Teenage",
         legend=dict(yanchor="top", y=-1, xanchor="center", x=0.5))
     
@@ -204,7 +203,7 @@ def education_statistics():
 
     # Update layout
     fig.update_layout(
-        title=dict(text="<i>Education level summary</i>", x=0.5,xanchor="center"),
+        title=dict(text=f"<i>Education level in { st.session_state.session_district }</i>", x=0.5,xanchor="center"),
         height=300,
         margin=dict(t=60, b=50, l=0, r=30),
         xaxis=dict(
@@ -226,8 +225,7 @@ def education_statistics():
     st.plotly_chart(fig, use_container_width=True, key="education_summary")
     
 
-def provinces_statistics():
-    records = st.session_state.filtered_records
+def provinces_statistics(records: List):
 
     #education level grouping
     regions_groups = appl.records_grouped_by_district(records, "regions")
@@ -250,11 +248,11 @@ def provinces_statistics():
     fig.add_trace(go.Bar(
         x=df['Women Asked'],
         y=df['Region'],
-        text=[f'${x}k' for x in df['Women Asked']],
+        text=[f'{x:,} Women' for x in df['Women Asked']],
         textposition='inside',
         orientation='h',
         marker_color='#ff4b4b',  # Blue color similar to the image
-        hovertemplate='%{y}: $%{x:.1f}k<extra></extra>'
+        hovertemplate='%{y}: %{x:,} Women<extra></extra>'
     ))
 
     # Update layout
@@ -279,3 +277,55 @@ def provinces_statistics():
 
     # Display the plot in Streamlit
     st.plotly_chart(fig, use_container_width=True,  key="regions_summary")
+
+
+def pregnancy_choropleth_map(records: List):
+    rwanda_districts = json.load(open("./District_Boundaries.geojson", "r"))
+    district_idmap = {}
+
+    # Add ID column and Map district to id
+    for feature in rwanda_districts["features"]:
+        feature["id"] = feature["properties"]["objectid"]
+        district_idmap[feature["properties"]["district"]] = feature["id"]
+
+    grouped_districts_records = appl.create_upload_summary(records, "district")
+    df = pd.DataFrame(grouped_districts_records)
+
+    # Add ID to Pregnancy dataframe
+    df["id"] = df["district"].apply(lambda x: district_idmap[x.capitalize()])
+    df["district"] = df["district"].apply(lambda x: str(x).capitalize())
+    df["pregnacy_percentage"] = round((df["pregnant_count"]/df["women_count"])* 100, 1)
+    df["literacy_percentage"] = round((df["literacy_count"]/df["women_count"])* 100, 1)
+
+    fig = px.choropleth_mapbox(
+            df,
+            locations= "id",
+            geojson= rwanda_districts,
+            color="pregnacy_percentage",
+            hover_name= "district",
+            hover_data= ["women_count", "literacy_percentage"],
+            center={"lat":-1.94, "lon": 29.87},
+            color_continuous_scale= [[0, '#d8acac'], [0.5, '#f89a9a'], [1.0, '#c61818']],
+            color_continuous_midpoint=0,
+            mapbox_style="carto-positron",
+            labels= {
+                "women_count": "Total Women", 
+                "pregnacy_percentage": "Pregnancy(%)",
+                "literacy_percentage": "Literacy(%)"
+            },
+            zoom = 7
+        )
+    
+    fig.update_layout(
+        title=dict(text="<i>Pregnancy and districts map</i>", x=0.5,xanchor="center"),
+        coloraxis_showscale=False,  # This line removes the colorscale
+        height = 400,
+        showlegend = False,
+        margin=dict(t=50, b=0, l=0, r=0),
+    )
+    
+    fig.update_geos(
+        fitbounds = "locations",
+        visible = False,
+    )
+    st.plotly_chart(fig, key="pregnancy_choropleth", use_container_width= True)

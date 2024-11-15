@@ -12,7 +12,7 @@ st.markdown("<style>div.block-container{padding-top:0em;}</style>", unsafe_allow
 theme = st_theme()
 
 #EXTERNAL STYLES
-with open("style.css") as t:
+with open("./static/style.css") as t:
     st.markdown(f"<style>{ t.read() }</style>", unsafe_allow_html= True)
 
 # PROGRAM STRUCTURE
@@ -35,11 +35,14 @@ def main():
     st.markdown(f"<h6 style='text-align:center;font-weight:normal;font-style: italic'>Displaying data for - <strong>{ st.session_state.session_district }</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Women between 15 and 19 years &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Un-weighted Counting</h6>", unsafe_allow_html= True)
 
     # project main content area
+    #introduce small space
+    st.write("")
+
     #left side
     cols1, cols2 = st.columns([2,1])
     with cols1:
         #Data intry
-        uploaded_file = st.file_uploader("***Upload File***", type=["xls", "xlsx"]) 
+        uploaded_file = st.file_uploader(f"{"**Upload File**"}", type=["xls", "xlsx"]) 
         if uploaded_file is not None:
             datas.upload_xlsx_file(uploaded_file)
 
@@ -58,7 +61,8 @@ def main():
     cols3, cols4 = st.columns([2,1])
     with cols3:
         #Heat Map
-        pcharts.country_heatmap()
+        pcharts.pregnancy_choropleth_map(db_records)
+        # pcharts.country_heatmap()
     
     with cols4:
         #LINE CHART
@@ -74,7 +78,7 @@ def main():
             pcharts.education_statistics()
 
         with sub_col2:
-             pcharts.provinces_statistics()
+             pcharts.provinces_statistics(db_records)
 
     with cols6:
         # Line chart
