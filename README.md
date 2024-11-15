@@ -10,7 +10,7 @@ A Streamlit dashboard visualizing teenage pregnancy trends in Rwanda, based on d
 
 ## Live Demo
 
-The dashboard is hosted and accessible [here](https://datawizards-nisr.streamlit.app).
+The dashboard is hosted and accessible [https://datawizards-nisr.streamlit.app](https://datawizards-nisr.streamlit.app).
 
 ## Installation
 
