@@ -41,6 +41,10 @@ The dashboard is hosted and accessible [https://datawizards-nisr.streamlit.app](
 - **`app.py`**: Main file for the Streamlit dashboard.
 ![Project Structure](https://github.com/saveur1/Datawizards/blob/main/static/project%20structure.png)
 
+- **`data_injection.py`**: Script responsible for importing, cleaning, and processing Excel data files into a structured format for analysis.
+- **`project_charts.py`**: Module dedicated to generating project-specific visualizations, including charts and maps, for data presentation.
+- **`datawizards.db`**: SQLite database used to store processed and imported data for efficient querying and analysis.
+
 ## Usage
 
 1. Run the application with `streamlit run app.py`.
