@@ -2,3 +2,4 @@ testing.txt
 test.py
 /.env
 /__pycache__
+/.devcontainer
