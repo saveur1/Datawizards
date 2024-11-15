@@ -8,7 +8,6 @@ import streamlit as st
 import pandas as pd
 from time import sleep
 from sqlalchemy.exc import IntegrityError
-from st_aggrid import AgGrid
 
 #Local Imports
 import application_logic as appl
@@ -200,7 +199,7 @@ def upload_xlsx_file(xlsx_file):
             columns_to_display = ["Ages", "Pregnancy Count", "Literate Count","Total Women"]
             filtered_df = df[columns_to_display]
 
-            AgGrid(filtered_df, fit_columns_on_grid_load= True, height=180)
+            st.table(filtered_df)
 
             #Input Survey round name
             survey_wave_name = st.text_input("Enter Survey Wave name", placeholder="2019-20")
