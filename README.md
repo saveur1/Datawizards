@@ -1,4 +1,4 @@
-# Teenage Pregnancy Trends Dashboard
+# Rwanda Teenage Pregnancy Trends
 
 A Streamlit dashboard visualizing teenage pregnancy trends in Rwanda, based on data from the Rwanda Demographic and Health Surveys conducted in 2010-2011, 2014-2015, and 2019-2020. This dashboard provides an overview of the data from these years, illustrating changes in teenage pregnancy rates over time.
 
