@@ -39,7 +39,7 @@ The dashboard is hosted and accessible [https://datawizards-nisr.streamlit.app](
 ## Project Structure
 
 - **`app.py`**: Main file for the Streamlit dashboard.
-![Logo](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/th5xamgrr6se0x5ro4g6.png)
+![Project Structure](https://github.com/saveur1/Datawizards/blob/main/static/project%20structure.png)
 
 ## Usage
 
@@ -68,8 +68,6 @@ These surveys provide comprehensive insights into teenage pregnancy rates over t
    - Removed incomplete or inconsistent records, such as missing age or pregnancy data.  
    - Harmonized variables across survey years to ensure compatibility, e.g., standardizing district names.  
   
-
-
 ## License
 
 This project is licensed under the MIT License. See the `LICENSE` file for details.
