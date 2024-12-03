@@ -276,6 +276,78 @@ def upload_xlsx_file(xlsx_file):
             
             if st.button("Submit"):
                 upload_data_into_database(survey_wave_name, array_data, xlsx_file)
+def upload_csv_file(xlsx_file):
+    if xlsx_file is not None:
+        columns_map = {
+                'v007' : "interview_year",
+                'v005' : "weights",
+                'v023' : "district", 
+                'v213' : "currently_pregnant", 
+                'v155' : "literacy", 
+                'v012' : "current_age", 
+                'v106' : "education_level", 
+                'v013' : "age_range",
+                'v024' : "regions",
+                'v190' : "wealth_quintile"
+        }
+        # data table
+        data_frame = pd.read_csv(xlsx_file)
+        data_frame = data_frame.rename(columns=lambda col: col.strip())
+
+        # Validate required columns
+        required_columns = ['v007', 'v005', 'v023', 'v213', 'v155', 'v012', 'v106', 'v013', "v024"]
+        columns_valid, missing_columns = appl.validate_required_columns(data_frame, required_columns)
+        
+
+        if not columns_valid:
+            st.error(f"Invalid file uploaded. Missing required columns: {', '.join(missing_columns)}")
+            st.write(columns_map)
+            return
+        
+        else:
+            #Rename Columns to match what's in database
+            sampling_decimals_offset = 1000000
+            data_frame = data_frame.rename(columns= columns_map )
+
+            # Transformations on Columns
+            data_frame["weights"] = data_frame["weights"] / sampling_decimals_offset
+            data_frame["currently_pregnant"] = data_frame["currently_pregnant"].apply(transform_pregnancy_status)
+            data_frame["literacy"] = data_frame["literacy"].apply(transform_literacy)
+
+            # Convert to array of dictionaries
+            array_data = data_frame[list(columns_map.values())].to_dict(orient="records")
+
+            #Remove unwanted records
+            array_data = filter_incoming_data(array_data)
+
+            # create data summary
+            summary = appl.create_upload_summary(array_data, "current_age")
+            
+            df = pd.DataFrame(summary)
+
+            df = df.rename(columns={
+                "ages": "Ages", 
+                "pregnant_count": "Pregnancy Count", 
+                "women_count": "Total Women",
+                "literacy_count": "Literate Count"
+            })
+
+
+            columns_to_display = ["Ages", "Pregnancy Count", "Literate Count","Total Women"]
+            filtered_df = df[columns_to_display]
+
+            # Remove extra decimal points
+            filtered_df["Pregnancy Count"] = filtered_df["Pregnancy Count"].apply(round_nearest)
+            filtered_df["Literate Count"] = filtered_df["Literate Count"].apply(round_nearest)
+            filtered_df["Total Women"] = filtered_df["Total Women"].apply(round_nearest)
+
+            st.table(filtered_df)
+
+            #Input Survey round name
+            survey_wave_name = st.text_input("Enter Survey Wave name", placeholder="2019-20")
+            
+            if st.button("Submit"):
+                upload_data_into_database(survey_wave_name, array_data, xlsx_file)
 
 
 def upload_data_into_database(survey_wave_name, array_data, xlsx_file):
