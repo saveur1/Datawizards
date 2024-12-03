@@ -40,11 +40,10 @@ def main():
     #introduce small space
     st.write("")
 
-    #left side
+    #Metric cards, data entry and donut chart for pregnancies
     cols1, cols2 = st.columns([2,1])
     with cols1:
-        #Data intry
-        uploaded_file = st.file_uploader(f"{"**Upload File**"}", type=["xls", "xlsx"]) 
+        uploaded_file = st.file_uploader(f"{"**Upload File**"}", type=["xls", "xlsx"])  #Data intry
         if uploaded_file is not None:
             datas.upload_xlsx_file(uploaded_file)
 
@@ -59,7 +58,7 @@ def main():
     st.write("")
 
 
-    # right side charts
+    # Heat maps and pregnancy chart history
     cols3, cols4 = st.columns([2,1])
     with cols3:
         #Heat Map
@@ -72,6 +71,7 @@ def main():
     #introduce small space
     st.write("")
 
+    # education level, provinces and wealth chart
     cols5, cols6 = st.columns([2,1])
     with cols5:
         sub_col1, sub_col2 = st.columns(2)
@@ -79,7 +79,7 @@ def main():
             pcharts.education_statistics()
 
         with sub_col2:
-             pcharts.provinces_statistics()
+            pcharts.provinces_statistics()
 
     with cols6:
         pcharts.wealth_quantile_chart()

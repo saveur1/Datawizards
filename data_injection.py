@@ -8,6 +8,7 @@ import streamlit as st
 import pandas as pd
 from time import sleep
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy import func, case
 
 #Local Imports
 import application_logic as appl
@@ -25,6 +26,7 @@ class TeenageProps(TypedDict):
     survey_round: str
     regions: str
     wealth_quintile: str
+    weights: float
 
 
 # DEFINE METADATA AND BASE
@@ -46,6 +48,7 @@ class TeenagePregnancy(Base):
     survey_round        = sa.Column("survey_round", sa.String)
     regions             = sa.Column("regions", sa.String)
     wealth_quintile     = sa.Column("wealth_quintile", sa.String, nullable=True)
+    weights             = sa.Column("weights", sa.Float)
 
     def __init__(
             self, 
@@ -58,7 +61,8 @@ class TeenagePregnancy(Base):
             education_level: str,
             survey_round: str,
             regions: str,
-            wealth_quintile: str = None
+            weights: float,
+            wealth_quintile: str = None,
         ):
         self.currently_pregnant = currently_pregnant
         self.interview_year     = interview_year
@@ -70,12 +74,13 @@ class TeenagePregnancy(Base):
         self.survey_round       = survey_round
         self.regions            = regions
         self.wealth_quintile    = wealth_quintile
+        self.weights            = weights
 
     def __repr__(self):
         return (f"TeenagePregnancy(district='{self.district}', interview_year={self.interview_year}, "
                 f"age_range='{self.age_range}', currently_pregnant='{self.currently_pregnant}', "
                 f"literacy='{self.literacy}', current_age={self.current_age}, "
-                f"education_level='{self.education_level}', survey_round='{self.survey_round}, regions='{self.regions}, wealth_quitile='{ self.wealth_quintile }')")
+                f"education_level='{self.education_level}', survey_round='{self.survey_round}, regions='{self.regions}, wealth_quitile='{ self.wealth_quintile }', weights='{ self.weights }')")
 
     def to_dict(self):
         return {
@@ -88,7 +93,8 @@ class TeenagePregnancy(Base):
             "education_level": self.education_level,
             "survey_round": self.survey_round,
             "regions": self.regions,
-            "wealth_quintile": self.wealth_quintile
+            "wealth_quintile": self.wealth_quintile,
+            "weights": self.weights
         }
     
     @classmethod
@@ -116,6 +122,39 @@ def get_table_data()-> List[TeenageProps]:
     result = TeenagePregnancy.get_all_as_dict(session)
     return result
 
+def get_pregnancy_counts_grouped() -> List[dict]:
+    """
+    Retrieve counts of pregnancies where 'currently_pregnant' is 'Yes' or 'yes',
+    grouped by 'district' and 'survey_round'.
+
+    :return: List of dictionaries with grouped pregnancy counts.
+    """
+    results = (
+        session.query(
+            TeenagePregnancy.district,
+            TeenagePregnancy.survey_round,
+            func.count(
+                case(
+                    (TeenagePregnancy.currently_pregnant == "Yes", 1),
+                    (TeenagePregnancy.currently_pregnant == "yes", 1),
+                    else_=None
+                )
+            ).label("pregnancy_count")
+        )
+        .group_by(TeenagePregnancy.district, TeenagePregnancy.survey_round)
+        .all()
+    )
+    
+    # Convert the result to a list of dictionaries
+    return [
+        {
+            "district": row.district,
+            "survey_round": row.survey_round,
+            "pregnancy_count": row.pregnancy_count
+        }
+        for row in results
+    ]
+
 
 def clean_district(district: str):
     if "rural" in district.lower() or "urban" in district.lower():
@@ -130,7 +169,23 @@ def clean_regions(region: str):
     if "city" in region.lower():
         return region.lower().replace("city", "").strip()
     
-    return region
+    return str(region).lower()
+
+# Define a transformation function
+def transform_pregnancy_status(value):
+    if value.lower() == "yes":
+        return "yes"
+    else:
+        return "no"
+    
+def transform_literacy(value):
+    if value != None and str(value).lower() != "cannot read at all":
+        return "yes"
+    else:
+        return "no"
+    
+def round_nearest(value):
+    return int(round(value, 0))
 
 
 # FILTER DATA AND REMOVE UNWANTED
@@ -140,6 +195,7 @@ def filter_incoming_data(records: List):
         if int(str(record["current_age"]).strip() or "30") < 20:
             district = clean_district(record["district"])
             region = clean_regions(record["regions"])
+
             record["district"] = district
             record["regions"] = region
             result.append(record)
@@ -151,7 +207,8 @@ def filter_incoming_data(records: List):
 def upload_xlsx_file(xlsx_file):
     if xlsx_file is not None:
         columns_map = {
-                'v007' : "interview_year", 
+                'v007' : "interview_year",
+                'v005' : "weights",
                 'v023' : "district", 
                 'v213' : "currently_pregnant", 
                 'v155' : "literacy", 
@@ -163,9 +220,10 @@ def upload_xlsx_file(xlsx_file):
         }
         # data table
         data_frame = pd.read_excel(xlsx_file)
+        data_frame = data_frame.rename(columns=lambda col: col.strip())
 
         # Validate required columns
-        required_columns = ['v007', 'v023', 'v213', 'v155', 'v012', 'v106', 'v013', "v024"]
+        required_columns = ['v007', 'v005', 'v023', 'v213', 'v155', 'v012', 'v106', 'v013', "v024"]
         columns_valid, missing_columns = appl.validate_required_columns(data_frame, required_columns)
         
 
@@ -176,7 +234,13 @@ def upload_xlsx_file(xlsx_file):
         
         else:
             #Rename Columns to match what's in database
+            sampling_decimals_offset = 1000000
             data_frame = data_frame.rename(columns= columns_map )
+
+            # Transformations on Columns
+            data_frame["weights"] = data_frame["weights"] / sampling_decimals_offset
+            data_frame["currently_pregnant"] = data_frame["currently_pregnant"].apply(transform_pregnancy_status)
+            data_frame["literacy"] = data_frame["literacy"].apply(transform_literacy)
 
             # Convert to array of dictionaries
             array_data = data_frame[list(columns_map.values())].to_dict(orient="records")
@@ -196,8 +260,14 @@ def upload_xlsx_file(xlsx_file):
                 "literacy_count": "Literate Count"
             })
 
+
             columns_to_display = ["Ages", "Pregnancy Count", "Literate Count","Total Women"]
             filtered_df = df[columns_to_display]
+
+            # Remove extra decimal points
+            filtered_df["Pregnancy Count"] = filtered_df["Pregnancy Count"].apply(round_nearest)
+            filtered_df["Literate Count"] = filtered_df["Literate Count"].apply(round_nearest)
+            filtered_df["Total Women"] = filtered_df["Total Women"].apply(round_nearest)
 
             st.table(filtered_df)
 
@@ -205,30 +275,35 @@ def upload_xlsx_file(xlsx_file):
             survey_wave_name = st.text_input("Enter Survey Wave name", placeholder="2019-20")
             
             if st.button("Submit"):
-                if not survey_wave_name:
-                    st.error("Survey wave name is required to identify different surveys periods!")
-                    return;    
-                
-                try:
-                    # Check for existing record with the same Survey wave name
-                    exists = session.query(TeenagePregnancy).filter_by(survey_round= survey_wave_name).first()
-                    
-                    if exists:
-                        st.error(f"This survey wave name already exists.")
-                        return
-                    
-                    for data in array_data:
-                        data["survey_round"] = survey_wave_name
+                upload_data_into_database(survey_wave_name, array_data, xlsx_file)
+
+
+def upload_data_into_database(survey_wave_name, array_data, xlsx_file):
+    if not survey_wave_name:
+        st.error("Survey wave name is required to identify different surveys periods!")
+        return;    
+    
+    try:
+        # Check for existing record with the same Survey wave name
+        exists = session.query(TeenagePregnancy).filter_by(survey_round= survey_wave_name).first()
         
-                    insert_multiple_data(array_data)
-                    st.success("All records was added in database successfully!")
-                    sleep(3)
-                    st.rerun()
-                
-                except IntegrityError:
-                    st.error("Error: Some entries for district and year Already exists. Each district-year combination must be unique.")
-                    session.rollback()
-                
-                except Exception as e:
-                    session.rollback()
-                    raise e  # Re-raise other exceptions
+        if exists:
+            st.error(f"This survey wave name already exists.")
+            return
+        
+        for data in array_data:
+            data["survey_round"] = survey_wave_name
+
+        insert_multiple_data(array_data)
+        st.success("All records was added in database successfully!")
+        xlsx_file = None
+        sleep(3)
+        st.rerun()
+    
+    except IntegrityError:
+        st.error("Error: Some entries for district and year Already exists. Each district-year combination must be unique.")
+        session.rollback()
+    
+    except Exception as e:
+        session.rollback()
+        raise e  # Re-raise other exceptions

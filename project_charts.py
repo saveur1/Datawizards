@@ -5,31 +5,31 @@ import plotly.graph_objects as go
 import json
 
 #Local Imports
-import application_logic as appl
-from typing import List
+import application_logic as app_logic
 from collections import defaultdict
 
 def current_pregnancy_chart():
     # get data from session
     filtered_records = st.session_state.filtered_records
+    total_women = app_logic.total_weights(filtered_records)
 
     # count pregnant teenagers
-    pregnant_count = appl.count_frequency(filtered_records, "currently_pregnant", "yes")
-    literate_count = appl.count_frequency(filtered_records, "literacy", ["able to read whole sentence", "able to read only parts of sentence"], array_values=True)
+    pregnant_count = app_logic.count_frequency(filtered_records, "currently_pregnant", "yes")
+    literate_count = app_logic.count_frequency(filtered_records, "literacy", "yes")
 
     trace_colors =  ['rgb(217, 217, 217)', 'rgb(216, 7, 7)']
-    pie_chart_data = [len(filtered_records) - pregnant_count, pregnant_count]
+    pie_chart_data = [total_women - pregnant_count, pregnant_count]
     chart_title = f"Pregnancy chart for { st.session_state.session_district }"
     chart_labels = ['Not Pregnant', 'Pregnant Teenage']
 
     left, middle= st.columns(2)
     if left.button("Pregnancy", use_container_width=True, key="pie_chart_left"):
-        pie_chart_data = [len(filtered_records) - pregnant_count, pregnant_count]
+        pie_chart_data = [total_women - pregnant_count, pregnant_count]
         chart_title = f"Pregnancy chart for { st.session_state.session_district }"
         chart_labels = ['Not Pregnant', 'Pregnant Teenage']
     
     if middle.button("Literacy", use_container_width=True, key="pie_chart_right"):
-        pie_chart_data = [literate_count, len(filtered_records) - literate_count]
+        pie_chart_data = [literate_count, total_women - literate_count]
         chart_title = f"Literacy chart for { st.session_state.session_district }"
         chart_labels = ['Able to read', "can't read at all"]
 
@@ -48,7 +48,7 @@ def current_pregnancy_chart():
         height=200,  # Set the desired height
         annotations=[
             dict(
-                text=f'{ "{:,} <br />Women".format(len(filtered_records)) }',
+                text=f'{ "{:,.0f} <br />Women".format(total_women) }',
                 x=0.5, y=0.5, font_size=20, showarrow=False
             )
         ]
@@ -69,7 +69,7 @@ def teenage_pregnancy_history():
         filtered_records = [data for data in records if str(data["district"]).lower() == str(district).lower()]
 
     # Get pregnancy counts for the earliest and latest year
-    summary = appl.create_upload_summary(filtered_records, "survey_round")
+    summary = app_logic.create_upload_summary(filtered_records, "survey_round")
 
     # Sort them by interview year
     summary = sorted(summary, key=lambda x: x["year"])
@@ -81,17 +81,7 @@ def teenage_pregnancy_history():
     survey_pregnancies = [ data["pregnant_count"]  for data in summary ]
     women_records = [ data["women_count"]  for data in summary ]
 
-    survey_pregnacy_result = appl.calculate_preg_percentages(survey_pregnancies, women_records)
-
-    # left, middle= st.columns(2)
-    # if left.button("Percent(%)", use_container_width=True):
-    #     survey_pregnacy_result = appl.calculate_preg_percentages(survey_pregnancies, women_records)
-    #     percent_sign = "(%)"
-
-    
-    # if middle.button("Plain Data", use_container_width=True):
-    #     survey_pregnacy_result = survey_pregnancies
-    #     percent_sign = ""
+    survey_pregnacy_result = app_logic.calculate_preg_percentages(survey_pregnancies, women_records)
 
     # Plot history chart
     fig=go.Figure()
@@ -115,7 +105,7 @@ def teenage_pregnancy_history():
 def education_statistics():
     records = st.session_state.filtered_records
     #education level grouping
-    education_groups = appl.records_grouped_by_district(records, "education_level")
+    education_groups = app_logic.records_grouped_by_district(records, "education_level")
     education_levels = defaultdict(list)
     for level, records in education_groups.items():
         education_levels["Education Level"].append(str(level).capitalize()),
@@ -127,6 +117,7 @@ def education_statistics():
     }
 
     df_education = pd.DataFrame(dict(education_levels) or default_ed)
+    df_education = df_education.sort_values(by="Number of Women", ascending= True)
 
     # Create the bar chart using Plotly
     fig = go.Figure()
@@ -168,7 +159,7 @@ def education_statistics():
 def provinces_statistics():
     records = st.session_state.years_age_filter
     #education level grouping
-    regions_groups = appl.records_grouped_by_district(records, "regions")
+    regions_groups = app_logic.records_grouped_by_district(records, "regions")
     regions = defaultdict(list)
 
     for region, records in regions_groups.items():
@@ -181,6 +172,7 @@ def provinces_statistics():
     }
 
     df = pd.DataFrame(regions or default_regions)
+    df = df.sort_values(by="Women Asked", ascending= True)
 
     # Create the bar chart using Plotly
     fig = go.Figure()
@@ -191,7 +183,7 @@ def provinces_statistics():
         text=[f'{x:,} Women' for x in df['Women Asked']],
         textposition='inside',
         orientation='h',
-        marker_color='#ff4b4b',  # Blue color similar to the image
+        marker_color='green',  # Blue color similar to the image
         hovertemplate='%{y}: %{x:,} Women<extra></extra>'
     ))
 
@@ -221,13 +213,13 @@ def provinces_statistics():
 
 def wealth_quantile_chart():
     #education level grouping
-    records = st.session_state.years_age_filter
-    regions_groups = appl.records_grouped_by_district(records, "wealth_quintile")
+    records = st.session_state.filtered_records
+    regions_groups = app_logic.records_grouped_by_district(records, "wealth_quintile")
     regions = defaultdict(list)
 
     for region, records in regions_groups.items():
         regions["wealth_category"].append(str(region).capitalize()),
-        regions["total_women"].append(len(records))
+        regions["total_women"].append(app_logic.total_weights(records))
 
     default_wealths = {
         "wealth_category": [],
@@ -235,6 +227,7 @@ def wealth_quantile_chart():
     }
 
     df = pd.DataFrame(regions or default_wealths)
+    df = df.sort_values(by="total_women", ascending=True)
 
     # Create the bar chart using Plotly
     fig = go.Figure()
@@ -277,15 +270,18 @@ def wealth_quantile_chart():
 def pregnancy_choropleth_map():
     records = st.session_state.years_age_filter
     rwanda_districts = json.load(open("./District_Boundaries.geojson", "r"))
+    total_women = app_logic.total_weights(records)
     district_idmap = {}
 
     # Add ID column and Map district to id
     for feature in rwanda_districts["features"]:
         feature["id"] = feature["properties"]["objectid"]
         district_idmap[feature["properties"]["district"]] = feature["id"]
-
-    grouped_districts_records = appl.create_upload_summary(records, "district")
+        
+    grouped_districts_records = app_logic.create_upload_summary(records, "district")  #Group all data by districts
     df = pd.DataFrame(grouped_districts_records)
+    
+    df["women_count"] = df["women_count"].apply(lambda x: int(round(x, 0)))
 
     # Add ID to Pregnancy dataframe
     if grouped_districts_records:

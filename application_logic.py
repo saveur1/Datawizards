@@ -49,7 +49,7 @@ def object_values(arr: List, attr1: str, attr2: str=""):
     
 
 def records_based_onyears(records:List, years: List, key_name: str)->List:
-    return [data for data in records if data[key_name] in years]
+    return [data for data in records if data[key_name] in years] # return array of data for particular year
 
 
 def records_grouped_by_district(records: List, attr: str = "district"):      
@@ -62,11 +62,20 @@ def records_grouped_by_district(records: List, attr: str = "district"):
         return dict(grouped_data)
 
 # COUNT PARTICULAR VALUES IN TABLE COLUMN
-def count_frequency(table_datas: List, column: str, value, array_values: bool = False):
-    if array_values:
-        return sum(1 for data in table_datas if str(data[column]).lower() in value)
-    
-    return sum(1 for data in table_datas if str(data[column]).lower() == value)
+def count_frequency(table_datas: List, column: str, value):
+    return int(round(sum(data["weights"] for data in table_datas if str(data[column]).lower() == value), 0))
+
+def total_weights(table_datas: List):
+    return int(round(sum(data["weights"] for data in table_datas), 0))
+
+# Custom function to find the nearest year divisible by 5
+def find_nearest_year(year):
+    if year % 5 == 0:
+        return year
+    else:
+        next_year = (year // 5 + 1) * 5  # Next closest year divisible by 5
+        prev_year = (year // 5) * 5      # Previous closest year divisible by 5
+        return next_year if abs(next_year - year) < abs(prev_year - year) else prev_year
 
 
 #CREATE UPLOAD SUMMARY
@@ -104,14 +113,14 @@ def create_upload_summary(arr_records: List, group_name: str):
 
         #Pregnant count
         if record["currently_pregnant"].lower() == "yes":
-            result[filter_name]["pregnant_count"] += 1
+            result[filter_name]["pregnant_count"] += record["weights"]
 
         #Women count
-        result[filter_name]["women_count"] += 1
+        result[filter_name]["women_count"] += record["weights"]
 
         #Female educated count
-        if str(record["literacy"]).lower() != "cannot read at all":
-            result[filter_name]["literacy_count"] += 1
+        if str(record["literacy"]).lower() != "no":
+            result[filter_name]["literacy_count"] += record["weights"]
 
     return list(dict(result).values())
 
@@ -135,8 +144,8 @@ def metric_cards():
     pregnant_teenagers = count_frequency(filtered_records, "currently_pregnant", "yes")
 
     #totoal teenagers and total educated teenagers
-    total_educated = count_frequency(filtered_records, "literacy", ["able to read whole sentence", "able to read only parts of sentence"], array_values=True)
-    total_teenager = len(filtered_records)
+    total_educated = count_frequency(filtered_records, "literacy", "yes")
+    total_teenager = total_weights(filtered_records)
 
 
     percentage_educated = (total_educated * 100) // (total_teenager or 1)
@@ -238,7 +247,8 @@ def project_sidebar(db_records, theme):
 
         for district, records in districts_groups.items():
             pregnancy_count = count_frequency(records, "currently_pregnant", "yes")
-            total_teenagers = len(records)
+            total_teenagers = total_weights(records)
+            
             st.markdown(f"""
             <div style="margin:0; border-bottom:1px solid rgba(0,0,0,0.2); padding-bottom:5px;margin-top:10px;margin-bottom:5px">
                 <p style="margin:0; padding:0;font-weight:bold">{ district.capitalize() }</p>
