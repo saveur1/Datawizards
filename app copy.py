@@ -41,7 +41,7 @@ def main():
     st.write("")
 
     #Metric cards, data entry and donut chart for pregnancies
-    cols1, cols2 = st.columns([2,1])
+ cols1, cols2 = st.columns([2,1])
     with cols1:
         #Data intry
         uploaded_file = st.file_uploader(f"{"**Upload File**"}", type=["xls", "xlsx", "csv"]) 
@@ -50,11 +50,13 @@ def main():
             try:
                  if file_extension in ['xls', 'xlsx']:
                 # Process Excel file
-                   datas.upload_xlsx_file(uploaded_file)
+                   data = pd.read_excel(uploaded_file)
+                   st.success("Excel file uploaded successfully!")
   
                  elif file_extension == 'csv':
                 # Process CSV file
-                    datas.upload_csv_file(uploaded_file)
+                    data = pd.read_csv(uploaded_file)
+                    st.success("CSV file uploaded successfully!")
                  else:
                     st.error("Unsupported file type!")
             except Exception as e:
