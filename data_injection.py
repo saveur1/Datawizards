@@ -11,7 +11,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy import func, case
 
 #Local Imports
-import application_logic as appl
+import application_logic as app_logic
 
 # DEFINING TEENAGE PREGNANCY TYPES
 class TeenageProps(TypedDict):
@@ -131,26 +131,39 @@ def get_pregnancy_counts_grouped() -> List[dict]:
     """
     results = (
         session.query(
-            TeenagePregnancy.district,
+            TeenagePregnancy.interview_year,
             TeenagePregnancy.survey_round,
-            func.count(
+            func.sum(
                 case(
-                    (TeenagePregnancy.currently_pregnant == "Yes", 1),
-                    (TeenagePregnancy.currently_pregnant == "yes", 1),
-                    else_=None
+                    (   TeenagePregnancy.currently_pregnant.in_(["Yes", "yes"]),
+                        TeenagePregnancy.weights  
+                    ),
+                    else_=0
                 )
-            ).label("pregnancy_count")
+            ).label("pregnancy_count"),
+            func.sum(
+                case(
+                    (   TeenagePregnancy.literacy.in_(["Yes", "yes"]),
+                        TeenagePregnancy.weights  
+                    ),
+                    else_=0
+                )
+            ).label("literacy_count"),
+
+            func.sum(TeenagePregnancy.weights).label("total_count"),
         )
-        .group_by(TeenagePregnancy.district, TeenagePregnancy.survey_round)
+        .group_by(TeenagePregnancy.survey_round)
         .all()
     )
     
     # Convert the result to a list of dictionaries
     return [
         {
-            "district": row.district,
+            "sequence_year": app_logic.find_nearest_year(row.interview_year),
             "survey_round": row.survey_round,
-            "pregnancy_count": row.pregnancy_count
+            "pregnancy_count": row.pregnancy_count,
+            "literacy_count": row.literacy_count,
+            "total_count": row.total_count
         }
         for row in results
     ]
@@ -224,7 +237,7 @@ def upload_xlsx_file(xlsx_file):
 
         # Validate required columns
         required_columns = ['v007', 'v005', 'v023', 'v213', 'v155', 'v012', 'v106', 'v013', "v024"]
-        columns_valid, missing_columns = appl.validate_required_columns(data_frame, required_columns)
+        columns_valid, missing_columns = app_logic.validate_required_columns(data_frame, required_columns)
         
 
         if not columns_valid:
@@ -249,7 +262,7 @@ def upload_xlsx_file(xlsx_file):
             array_data = filter_incoming_data(array_data)
 
             # create data summary
-            summary = appl.create_upload_summary(array_data, "current_age")
+            summary = app_logic.create_upload_summary(array_data, "current_age")
             
             df = pd.DataFrame(summary)
 
@@ -296,7 +309,7 @@ def upload_csv_file(xlsx_file):
 
         # Validate required columns
         required_columns = ['v007', 'v005', 'v023', 'v213', 'v155', 'v012', 'v106', 'v013', "v024"]
-        columns_valid, missing_columns = appl.validate_required_columns(data_frame, required_columns)
+        columns_valid, missing_columns = app_logic.validate_required_columns(data_frame, required_columns)
         
 
         if not columns_valid:
@@ -321,7 +334,7 @@ def upload_csv_file(xlsx_file):
             array_data = filter_incoming_data(array_data)
 
             # create data summary
-            summary = appl.create_upload_summary(array_data, "current_age")
+            summary = app_logic.create_upload_summary(array_data, "current_age")
             
             df = pd.DataFrame(summary)
 

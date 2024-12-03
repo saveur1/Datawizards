@@ -16,141 +16,143 @@ from gluonts.mx.model.deepar import DeepAREstimator
 from gluonts.mx.trainer import Trainer
 from gluonts.dataset.common import ListDataset
 from gluonts.evaluation.backtest import make_evaluation_predictions
+import mxnet as mx
 
 mpl.rcParams["figure.figsize"] = (10,8)
 mpl.rcParams["axes.grid"] = False
 
-# load dataset
-db_records = datas.get_table_data()
-data_frame = pd.DataFrame(db_records)
-data_frame["sequence_year"] = data_frame["interview_year"].apply(app_logic.find_nearest_year)
+# data_frame = pd.DataFrame(db_records)
+# data_frame["sequence_year"] = data_frame["interview_year"].apply(app_logic.find_nearest_year)
 
-# creating estmator
-train_time = 2010
-prediction_length = 1
+# # creating estmator
+# train_time = 2010
+# prediction_length = 1
 
-estimator = DeepAREstimator(
-    freq="5y",
-    context_length=2,                      # Use the last 2 time steps (10 years)
-    prediction_length= prediction_length,  # Predict the next 5 years
-    num_cells=10,                          # Use 10 hidden units for better capacity
-    cell_type="lstm",                      # LSTM for long-term dependencies
-    trainer=Trainer(epochs=50)             # Train for 50 epochs for better performance
-)
+# estimator = DeepAREstimator(
+#     freq="5y",
+#     context_length=2,                      # Use the last 2 time steps (10 years)
+#     prediction_length= prediction_length,  # Predict the next 5 years
+#     num_cells=10,                          # Use 10 hidden units for better capacity
+#     cell_type="lstm",                      # LSTM for long-term dependencies
+#     trainer=Trainer(epochs=50)             # Train for 50 epochs for better performance
+# )
 
-# Step 1: Aggregate the data (counts of currently pregnant by year)
-aggregated_data = (
-    data_frame[data_frame["currently_pregnant"].str.lower() == "yes"]
-    .groupby("sequence_year")
-    .agg({"weights": "sum"})  # Weighted count
-    .reset_index()
-)
+# # Step 1: Aggregate the data (counts of currently pregnant by year)
+# aggregated_data = (
+#     data_frame[data_frame["currently_pregnant"].str.lower() == "yes"]
+#     .groupby("sequence_year")
+#     .agg({"weights": "sum"})  # Weighted count
+#     .reset_index()
+# )
 
-st.write(aggregated_data)
+# st.write(aggregated_data)
 
-# Prepare training data
-training_data = ListDataset(
-        [{ "start": data_frame.index[0], "target": data_frame.currently_pregnant[:train_time] }],
-        freq= "5y"
-    )
+# # Prepare training data
+# training_data = ListDataset(
+#         [{ "start": data_frame.index[0], "target": data_frame.currently_pregnant[:train_time] }],
+#         freq= "5y"
+#     )
 
 
-# Predictor
-predictor = estimator.train(training_data= training_data)
+# # Predictor
+# predictor = estimator.train(training_data= training_data)
 
 
-# Load and preprocess data
 def prepare_data(data):
     # Convert data to DataFrame
-    df = pd.DataFrame([x.split() for x in data.split('\n')], 
-                      columns=['district', 'interview_year', 'age_range', 'currently_pregnant', 
-                               'literacy', 'current_age', 'education_level', 'survey_round', 
-                               'regions', 'wealth_quintile', 'weights', 'sequence_year'])
+    df = pd.DataFrame(data)
     
-    # Encode categorical variables
-    categorical_cols = ['district', 'age_range', 'literacy', 
-                        'education_level', 'regions', 'wealth_quintile']
-    
-    label_encoders = {}
-    for col in categorical_cols:
-        le = LabelEncoder()
-        df[col] = le.fit_transform(df[col])
-        label_encoders[col] = le
-    
-    # Encode target variable
-    df['currently_pregnant'] = df['currently_pregnant'].map({'yes': 1, 'no': 0})
+    # Label encode survey_round
+    le = LabelEncoder()
+    df['survey_round_encoded'] = le.fit_transform(df['survey_round'])
     
     # Prepare features for time series
-    features = ['district', 'age_range', 'literacy', 
-                'current_age', 'education_level', 'regions', 
-                'wealth_quintile', 'weights']
+    features = ['survey_round_encoded', 'pregnancy_count', 
+                'literacy_count', 'total_count']
     
-    return df, features, label_encoders
+    # Print debug information
+    print("DataFrame Info:")
+    print(df.info())
+    print("\nUnique sequence years:", df['sequence_year'].unique())
+    
+    # Target variable (choose based on your prediction goal)
+    df['target'] = df['pregnancy_count']
+    
+    return df, features
 
-
-# Create GluonTS time series dataset
 def create_gluonts_dataset(df, features):
-    # Group by sequence year
-    grouped = df.groupby('sequence_year')
-    
     # Prepare data for GluonTS
-    time_series_data = []
-    for name, group in grouped:
-        time_series_data.append({
-            'start': name,
-            'target': group['currently_pregnant'].values,
-            'dynamic_feat': group[features].T
-        })
+    time_series_data = [{
+        'start': df['sequence_year'].min(),
+        'target': df['target'].values,
+        'dynamic_feat': df[features].values.T
+    }]
     
-    return ListDataset(time_series_data, freq='5Y')
+    print(f"Time series entries: {len(time_series_data)}")
+    
+    return ListDataset(time_series_data, freq='5YE')
 
-# Train and predict
 def train_predict_pregnancy(data):
+    # Set MXNet context
+    mx.context.default_ctx = mx.cpu()
+    
     # Prepare data
-    df, features, label_encoders = prepare_data(data)
+    df, features = prepare_data(data)
     
-    # Split data
-    train_df, test_df = train_test_split(df, test_size=0.2, random_state=42)
-    
-    # Create GluonTS datasets
-    train_dataset = create_gluonts_dataset(train_df, features)
-    test_dataset = create_gluonts_dataset(test_df, features)
+    # Create GluonTS dataset
+    dataset = create_gluonts_dataset(df, features)
     
     # Define model
     estimator = DeepAREstimator(
-        freq='5Y',
+        freq='5YE',
         prediction_length=1,
-        context_length=len(train_df),
-        num_layers=2,
-        num_cells=40,
-        trainer=Trainer(epochs=50, learning_rate=1e-3)
+        context_length=1,
+        num_layers=1,
+        num_cells=10,
+        trainer=Trainer(epochs=10)
     )
     
     # Train predictor
-    predictor = estimator.train(train_dataset)
+    try:
+        predictor = estimator.train(dataset)
+        
+        # Forecast
+        forecast_it, ts_it = make_evaluation_predictions(
+            dataset=dataset,
+            predictor=predictor
+        )
+        
+        # Collect forecasts
+        forecasts = list(forecast_it)
+        true_values = list(ts_it)
+        
+        return forecasts, true_values, predictor
     
-    # Forecast
-    forecast_it, ts_it = make_evaluation_predictions(
-        dataset=test_dataset,
-        predictor=predictor
-    )
-    
-    # Collect forecasts
-    forecasts = list(forecast_it)
-    true_values = list(ts_it)
-    
-    return forecasts, true_values, predictor
+    except Exception as e:
+        print(f"Training error: {e}")
+        return None, None, None
+
+def create_visualization(ts_entry, forecast_entry):
+    plot_length = 1
+    prediction_intervals = (30, 60)
+    legend = ["Observations", "Median prediction"]+[f"{k}% prediction interval" for k in prediction_intervals[::-1]] 
+
+    fig, ax = plotly.subplots(1, 1, figsize=(10, 7))
+    ts_entry[plot_length].plot(ax=ax)
+    forecast_entry.plot(prediction_intervals= prediction_intervals, color="g")
+    plotly.grid(which="both")
+    plotly.legend(legend, loc="upper left")
+    plotly.show()
 
 # Example usage
 def main():
-    # Paste your data here
-    data = '''your_data_here'''
-    
+    data = datas.get_pregnancy_counts_grouped()
+    # [{'sequence_year': 2010, 'survey_round': '2010-11', 'pregnancy_count': 44.468354, 'literacy_count': 2638.216695, 'total_count': 2945.333568}, {'sequence_year': 2015, 'survey_round': '2014-15', 'pregnancy_count': 52.397633, 'literacy_count': 2513.726921, 'total_count': 2767.865233}, {'sequence_year': 2020, 'survey_round': '2019-20', 'pregnancy_count': 49.342285, 'literacy_count': 3024.508962, 'total_count': 3258.312762}]
     forecasts, true_values, predictor = train_predict_pregnancy(data)
-    
-    # Interpret results
-    for forecast, true_val in zip(forecasts, true_values):
-        print(f"Predicted: {forecast.mean}, Actual: {true_val}")
+    print(true_values)
+
+    create_visualization(true_values[0], forecasts[0])
+
 
 if __name__ == "__main__":
     main()
