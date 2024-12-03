@@ -44,18 +44,23 @@ def main():
     cols1, cols2 = st.columns([2,1])
     with cols1:
         #Data intry
-        uploaded_file = st.file_uploader(f"{"**Upload File**"}", type=["xls", "xlsx", "csv"]) 
+        uploaded_file = st.file_uploader(f"{"**Upload File**"}", type=["xls", "xlsx", "csv","dta"]) 
         if uploaded_file is not None:
             file_extension = uploaded_file.name.split('.')[-1].lower()
             try:
-                 if file_extension in ['xls', 'xlsx']:
+                if file_extension in ['xls', 'xlsx']:
                 # Process Excel file
-                   datas.upload_xlsx_file(uploaded_file)
-  
-                 elif file_extension == 'csv':
+                    datas.upload_xlsx_file(uploaded_file)
+                    
+                elif file_extension == 'csv':
                 # Process CSV file
                     datas.upload_csv_file(uploaded_file)
-                 else:
+                    
+                elif file_extension == 'dta':
+                # Process CSV file
+                    datas.upload_dta_file(uploaded_file)
+                    
+                else:
                     st.error("Unsupported file type!")
             except Exception as e:
              st.error(f"An error occurred: {e}")
