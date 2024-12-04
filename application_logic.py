@@ -235,7 +235,7 @@ def project_sidebar(db_records, theme):
         st.markdown(f"""
             <div style="margin:0; border-bottom:1px solid rgba(0,0,0,0.2); padding-bottom:5px;margin-top:10px;margin-bottom:5px">
                 <p style="margin:0; padding:0;font-weight:bold"> All Districts</p>
-                <p style="margin:0; padding:0; margin-top:0">{min(years_options)} - {max(years_options)}: <span style="color: #ff4b4b;font-weight: bold">{"{:,.0f}".format(count_frequency(filtered_records, "currently_pregnant", "yes"))} Pregnancy</span></p>
+                <p style="margin:0; padding:0; margin-top:0">{min(years_options)} - {max(years_options)}: <span style="color: #005cab;font-weight: bold">{"{:,.0f}".format(count_frequency(filtered_records, "currently_pregnant", "yes"))} Pregnancy</span></p>
                 <p style="margin:0; padding:0; margin-top:0">Total: { "{:,.0f}".format(len(filtered_records)) } Female Teenagers</p>
             </div>
             """, unsafe_allow_html=True)
@@ -252,7 +252,7 @@ def project_sidebar(db_records, theme):
             st.markdown(f"""
             <div style="margin:0; border-bottom:1px solid rgba(0,0,0,0.2); padding-bottom:5px;margin-top:10px;margin-bottom:5px">
                 <p style="margin:0; padding:0;font-weight:bold">{ district.capitalize() }</p>
-                <p style="margin:0; padding:0; margin-top:0">{min(years_options)} - {max(years_options)}: <span style="color: #ff4b4b;font-weight: bold">{ "{:,.0f}".format(pregnancy_count) } Pregnancy</span></p>
+                <p style="margin:0; padding:0; margin-top:0">{min(years_options)} - {max(years_options)}: <span style="color: #005cab ;font-weight: bold">{ "{:,.0f}".format(pregnancy_count) } Pregnancy</span></p>
                 <p style="margin:0; padding:0; margin-top:0">Total Female: { "{:,.0f}".format(total_teenagers) } Teenagers</p>
             """, unsafe_allow_html=True)
 
