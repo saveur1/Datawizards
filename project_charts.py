@@ -105,7 +105,7 @@ def teenage_pregnancy_history():
 def education_statistics():
     records = st.session_state.filtered_records
     #education level grouping
-    education_groups = app_logic.records_grouped_by_district(records, "education_level")
+    education_groups = app_logic.records_grouped_by(records, "education_level")
     education_levels = defaultdict(list)
     for level, records in education_groups.items():
         education_levels["Education Level"].append(str(level).capitalize()),
@@ -159,7 +159,7 @@ def education_statistics():
 def provinces_statistics():
     records = st.session_state.years_age_filter
     #education level grouping
-    regions_groups = app_logic.records_grouped_by_district(records, "regions")
+    regions_groups = app_logic.records_grouped_by(records, "regions")
     regions = defaultdict(list)
 
     for region, records in regions_groups.items():
@@ -214,7 +214,7 @@ def provinces_statistics():
 def wealth_quantile_chart():
     #education level grouping
     records = st.session_state.filtered_records
-    regions_groups = app_logic.records_grouped_by_district(records, "wealth_quintile")
+    regions_groups = app_logic.records_grouped_by(records, "wealth_quintile")
     regions = defaultdict(list)
 
     for region, records in regions_groups.items():
@@ -270,7 +270,6 @@ def wealth_quantile_chart():
 def pregnancy_choropleth_map():
     records = st.session_state.years_age_filter
     rwanda_districts = json.load(open("./District_Boundaries.geojson", "r"))
-    total_women = app_logic.total_weights(records)
     district_idmap = {}
 
     # Add ID column and Map district to id

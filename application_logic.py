@@ -52,7 +52,7 @@ def records_based_onyears(records:List, years: List, key_name: str)->List:
     return [data for data in records if data[key_name] in years] # return array of data for particular year
 
 
-def records_grouped_by_district(records: List, attr: str = "district"):      
+def records_grouped_by(records: List, attr: str = "district"):      
         # Use defaultdict to group by district
         grouped_data = defaultdict(list)
         for record in records:
@@ -99,7 +99,7 @@ def create_upload_summary(arr_records: List, group_name: str):
         filter_name = str(record[group_name]).lower()
 
         #Survey Round
-        if group_name == "survey_round":
+        if group_name == "survey_round" or group_name == "district":
             result[filter_name]["survey_round"] = record["survey_round"]
 
         #District
@@ -174,7 +174,7 @@ def filter_records_basedon_periods(years_records: List):
         st.session_state.filtered_records = years_records
     
     else:
-        district_data = records_grouped_by_district(years_records)[str(district).lower()]
+        district_data = records_grouped_by(years_records)[str(district).lower()]
         st.session_state.filtered_records = district_data
 
 
@@ -216,7 +216,7 @@ def project_sidebar(db_records, theme):
     st.session_state.years_age_filter = filtered_records
 
     # Group districts
-    districts_groups = records_grouped_by_district(filtered_records)
+    districts_groups = records_grouped_by(filtered_records)
 
     if search_district:  #Search Functionality
         districts_groups = search_surveys_district(districts_groups, search_district.lower())
@@ -224,7 +224,7 @@ def project_sidebar(db_records, theme):
             st.error(districts_groups)
             return
     else:
-        districts_groups = records_grouped_by_district(filtered_records)
+        districts_groups = records_grouped_by(filtered_records)
 
     
 
@@ -267,3 +267,26 @@ def calculate_preg_percentages(pregnancy_records, women_records):
         percentage.append(round((pregnancy_records[i] * 100) / (women_records[i] or 1), 1))
     
     return percentage
+
+def get_districts_string(records: List, survey_name: str):
+    output = f"The following are data for { survey_name } Survey round in each district:"
+
+    for record in records:
+        # Stringify record
+        output += (f"{record["district"]} District(Pregnant Count={round(record["pregnant_count"], 0)}, "
+                   f"Total Women Teenager Count={round(record["women_count"], 0)}, Total Literate Female Teenager={ round(record["literacy_count"], 0)}, "
+                   f"Survey Round='{record["survey_round"]}')")
+    
+    return output
+
+def get_country_string(records: List):
+    output = '''
+                The following are summary list of data in whole country for each survey round:
+            '''
+
+    for record in records:
+        # Stringify record
+        output += (f"{record["survey_round"]} Survey(Pregnant Count={round(record["pregnancy_count"], 0)}, "
+                   f"Total Women Teenager Count={round(record["total_count"], 0)}, Total Literate Female Teenager={ round(record["literacy_count"], 0)}')")
+    
+    return output

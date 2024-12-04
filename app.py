@@ -5,6 +5,7 @@ import data_injection as datas
 import application_logic as appl
 import project_charts as pcharts
 from streamlit_theme import st_theme
+import project_assistant as assistant
 
 st.set_page_config(page_title="Teenage pregnacy prediction",layout="wide",page_icon="🌍")
 st.markdown("<style>div.block-container{padding-top:0em;}</style>", unsafe_allow_html=True)
@@ -18,6 +19,12 @@ with open("./static/style.css") as t:
 def main():
     # database access
     db_records = datas.get_table_data()
+    chat_messages = [
+        {
+            "role": "ai",
+            "prompt": "What can I help you with?"
+        }
+    ]
 
     if "filtered_records" not in st.session_state:
             st.session_state.filtered_records = db_records
@@ -28,13 +35,16 @@ def main():
     if "years_age_filter" not in st.session_state:
             st.session_state.years_age_filter = db_records
 
+    if "chat_messages" not in st.session_state:
+            st.session_state.chat_messages = chat_messages
+
     # project sidebar
     with st.sidebar:
         appl.project_sidebar(db_records, theme)
 
 
      # Current district in View
-    st.markdown(f"<h6 style='text-align:center;font-weight:normal;font-style: italic'>Displaying data for - <strong>{ st.session_state.session_district }</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Women between 15 and 19 years &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Un-weighted Counting</h6>", unsafe_allow_html= True)
+    st.markdown(f"<h6 class='page_title' style='text-align:center;font-weight:normal;font-style: italic'>Displaying data for - <strong>{ st.session_state.session_district }</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Women between 15 and 19 years &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Weighted data</strong></h6>", unsafe_allow_html= True)
 
     # project main content area
     #introduce small space
@@ -102,9 +112,15 @@ def main():
     with cols6:
         pcharts.wealth_quantile_chart()
 
+    # Update Ai Model data
+    assistant.main()
+
+    st.button("Ask AI", icon="💬", key="ai_chart_button", type="primary", on_click= assistant.chat_with_assistant, help="Click to chat with datawizard assistant.")
+
 
 if __name__ == "__main__":
     #initialize database
     datas.Base.metadata.create_all(bind=datas.engine)
 
+    # Load dashboard
     main()

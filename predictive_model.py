@@ -1,61 +1,23 @@
-import application_logic as app_logic
 import data_injection as datas
 import streamlit as st
 
 # Predictive imports
 import pandas as pd
 import matplotlib as mpl
-import matplotlib.pyplot as plotly
+import matplotlib.pyplot as plt
 
 import numpy as np
 np.bool = bool
 
 from sklearn.preprocessing import LabelEncoder
-from sklearn.model_selection import train_test_split
 from gluonts.mx.model.deepar import DeepAREstimator
 from gluonts.mx.trainer import Trainer
 from gluonts.dataset.common import ListDataset
 from gluonts.evaluation.backtest import make_evaluation_predictions
 import mxnet as mx
 
-mpl.rcParams["figure.figsize"] = (10,8)
-mpl.rcParams["axes.grid"] = False
-
-# data_frame = pd.DataFrame(db_records)
-# data_frame["sequence_year"] = data_frame["interview_year"].apply(app_logic.find_nearest_year)
-
-# # creating estmator
-# train_time = 2010
-# prediction_length = 1
-
-# estimator = DeepAREstimator(
-#     freq="5y",
-#     context_length=2,                      # Use the last 2 time steps (10 years)
-#     prediction_length= prediction_length,  # Predict the next 5 years
-#     num_cells=10,                          # Use 10 hidden units for better capacity
-#     cell_type="lstm",                      # LSTM for long-term dependencies
-#     trainer=Trainer(epochs=50)             # Train for 50 epochs for better performance
-# )
-
-# # Step 1: Aggregate the data (counts of currently pregnant by year)
-# aggregated_data = (
-#     data_frame[data_frame["currently_pregnant"].str.lower() == "yes"]
-#     .groupby("sequence_year")
-#     .agg({"weights": "sum"})  # Weighted count
-#     .reset_index()
-# )
-
-# st.write(aggregated_data)
-
-# # Prepare training data
-# training_data = ListDataset(
-#         [{ "start": data_frame.index[0], "target": data_frame.currently_pregnant[:train_time] }],
-#         freq= "5y"
-#     )
-
-
-# # Predictor
-# predictor = estimator.train(training_data= training_data)
+# mpl.rcParams["figure.figsize"] = (10,8)
+# mpl.rcParams["axes.grid"] = False
 
 
 def prepare_data(data):
@@ -70,25 +32,20 @@ def prepare_data(data):
     features = ['survey_round_encoded', 'pregnancy_count', 
                 'literacy_count', 'total_count']
     
-    # Print debug information
-    print("DataFrame Info:")
-    print(df.info())
-    print("\nUnique sequence years:", df['sequence_year'].unique())
-    
-    # Target variable (choose based on your prediction goal)
+    # Target variable
     df['target'] = df['pregnancy_count']
     
     return df, features
 
-def create_gluonts_dataset(df, features):
+def create_gluonts_dataset(df: type[pd.DataFrame], features):
     # Prepare data for GluonTS
+    start = pd.Period(2010, freq="5Y")
+
     time_series_data = [{
-        'start': df['sequence_year'].min(),
+        'start': start,
         'target': df['target'].values,
         'dynamic_feat': df[features].values.T
     }]
-    
-    print(f"Time series entries: {len(time_series_data)}")
     
     return ListDataset(time_series_data, freq='5YE')
 
@@ -105,9 +62,8 @@ def train_predict_pregnancy(data):
     # Define model
     estimator = DeepAREstimator(
         freq='5YE',
-        prediction_length=1,
-        context_length=1,
-        num_layers=1,
+        prediction_length=2,
+        context_length=2,
         num_cells=10,
         trainer=Trainer(epochs=10)
     )
@@ -132,26 +88,73 @@ def train_predict_pregnancy(data):
         print(f"Training error: {e}")
         return None, None, None
 
-def create_visualization(ts_entry, forecast_entry):
-    plot_length = 1
-    prediction_intervals = (30, 60)
-    legend = ["Observations", "Median prediction"]+[f"{k}% prediction interval" for k in prediction_intervals[::-1]] 
 
-    fig, ax = plotly.subplots(1, 1, figsize=(10, 7))
-    ts_entry[plot_length].plot(ax=ax)
-    forecast_entry.plot(prediction_intervals= prediction_intervals, color="g")
-    plotly.grid(which="both")
-    plotly.legend(legend, loc="upper left")
-    plotly.show()
+def gemini_chart(ts_entry, forecast_entry):
+    # Extract the true time series data
+    true_series = ts_entry[-100:].to_timestamp()
+
+    # Extract the predicted mean values
+    predicted_series = forecast_entry.mean
+
+    # Generate a range of future timestamps for the predicted series
+    prediction_timestamps = pd.date_range(
+        start= forecast_entry.start_date.to_timestamp(),
+        periods= len(predicted_series),
+        freq= forecast_entry.freq
+    )
+
+    print(prediction_timestamps)
+
+    # Plot the true values
+    plt.plot(true_series.index, true_series.values, label="True Values", color="blue", marker="o", linestyle="--")
+
+    # Plot the predicted values
+    plt.plot(prediction_timestamps, predicted_series, label="Predicted Values", color="orange", marker="x", linestyle="-")
+
+    # Add labels, legend, and grid
+    plt.title("True vs Predicted Values")
+    plt.xlabel("Time")
+    plt.ylabel("Values")
+    plt.legend()
+    plt.grid(True)
+    st.pyplot(plt)
+
 
 # Example usage
 def main():
     data = datas.get_pregnancy_counts_grouped()
     # [{'sequence_year': 2010, 'survey_round': '2010-11', 'pregnancy_count': 44.468354, 'literacy_count': 2638.216695, 'total_count': 2945.333568}, {'sequence_year': 2015, 'survey_round': '2014-15', 'pregnancy_count': 52.397633, 'literacy_count': 2513.726921, 'total_count': 2767.865233}, {'sequence_year': 2020, 'survey_round': '2019-20', 'pregnancy_count': 49.342285, 'literacy_count': 3024.508962, 'total_count': 3258.312762}]
-    forecasts, true_values, predictor = train_predict_pregnancy(data)
-    print(true_values)
+    forecasts, true_values, _ = train_predict_pregnancy(data)
+    # np.array(true_values[:5]).reshape(-1)
 
-    create_visualization(true_values[0], forecasts[0])
+    # first entry of the forecast list
+    forecast_entry = forecasts[0]
+    # first entry of the time series list
+    ts_entry = true_values[0]
+
+    print(f"Number of sample paths: {forecast_entry.num_samples}")
+    print(f"Dimension of samples: {forecast_entry.samples.shape}")
+    print(f"Start date of the forecast window: {forecast_entry.start_date}")
+    print(f"Frequency of the time series: {forecast_entry.freq}")
+
+    print(f"Mean of the future window:\n {forecast_entry.mean}")
+    print(f"0.5-quantile (median) of the future window:\n {forecast_entry.quantile(0.5)}")
+
+    # Extract the true time series data
+    # plt.plot(ts_entry[-150:].to_timestamp())
+    # forecast_entry.plot(show_label=True, color="g")
+
+    # # Add labels, legend, and grid
+    # plt.title("True vs Predicted Values")
+    # plt.xlabel("Time")
+    # plt.ylabel("Values")
+    # plt.legend()
+    # plt.grid(True)
+
+    # # Display the chart in Streamlit
+    # st.pyplot(plt)
+
+    gemini_chart(ts_entry, forecast_entry)
 
 
 if __name__ == "__main__":

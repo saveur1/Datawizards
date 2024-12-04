@@ -16,3 +16,10 @@
     background-color: transparent !important;
     color: #d0bcbc;
 }
+
+.st-key-ai_chart_button  button{
+    background-color: green !important;
+    position: fixed;
+    bottom: 80px;
+    right: 50px;
+}
