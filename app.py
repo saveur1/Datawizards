@@ -55,6 +55,7 @@ def main():
     with cols1:
         #Data intry
         uploaded_file = st.file_uploader(f"{"**Upload File**"}", type=["xls", "xlsx", "csv","dta"]) 
+
         if uploaded_file is not None:
             file_extension = uploaded_file.name.split('.')[-1].lower()
             try:
@@ -90,7 +91,10 @@ def main():
     cols3, cols4 = st.columns([2,1])
     with cols3:
         #Heat Map
-        pcharts.pregnancy_choropleth_map()
+        feedback = pcharts.pregnancy_choropleth_map()
+        print(feedback)
+        if feedback == "Not ploted":
+            pcharts.districts_pregancy_barchat()
     
     with cols4:
         #LINE CHART

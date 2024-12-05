@@ -3,6 +3,7 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import json
+import numpy as np
 
 #Local Imports
 import application_logic as app_logic
@@ -272,8 +273,13 @@ def pregnancy_choropleth_map():
     rwanda_districts = json.load(open("./District_Boundaries.geojson", "r"))
     district_idmap = {}
 
+    incoming_districts = list({ str(record["district"]).capitalize() for record in records})
+
     # Add ID column and Map district to id
     for feature in rwanda_districts["features"]:
+        if feature["properties"]["district"] not in incoming_districts:
+            return "Not ploted"
+        
         feature["id"] = feature["properties"]["objectid"]
         district_idmap[feature["properties"]["district"]] = feature["id"]
         
@@ -288,7 +294,7 @@ def pregnancy_choropleth_map():
         df["district"] = df["district"].apply(lambda x: str(x).capitalize())
         df["pregnacy_percentage"] = round((df["pregnant_count"]/df["women_count"])* 100, 1)
         df["literacy_percentage"] = round((df["literacy_count"]/df["women_count"])* 100, 1)
-
+    # [[0, '#46e800'], [0.5, '#f3ea00'], [1.0, '#005cab']]
         fig = px.choropleth_mapbox(
                 df,
                 locations= "id",
@@ -297,7 +303,7 @@ def pregnancy_choropleth_map():
                 hover_name= "district",
                 hover_data= ["women_count", "literacy_percentage"],
                 center={"lat":-1.94, "lon": 29.87},
-                color_continuous_scale= [[0, '#46e800'], [0.5, '#f3ea00'], [1.0, '#005cab']],
+                color_continuous_scale= px.colors.sequential.Tealgrn,
                 color_continuous_midpoint=0,
                 mapbox_style="carto-positron",
                 labels= {
@@ -310,14 +316,59 @@ def pregnancy_choropleth_map():
     
         fig.update_layout(
             title=dict(text="<i>Pregnancy and districts map</i>", x=0.5,xanchor="center"),
-            coloraxis_showscale=False,  # This line removes the colorscale
+            coloraxis_showscale=True,  # This line removes or show the colorscale
             height = 400,
-            showlegend = False,
+            showlegend = True,
             margin=dict(t=50, b=0, l=0, r=0),
         )
         
-        fig.update_geos(
-            fitbounds = "locations",
-            visible = False,
-        )
         st.plotly_chart(fig, key="pregnancy_choropleth", use_container_width= True)
+
+
+def districts_pregancy_barchat():
+    records = st.session_state.years_age_filter
+    grouped_districts_records = app_logic.create_upload_summary(records, "district")  #Group all data by districts
+    df = pd.DataFrame(grouped_districts_records)
+    df["pregnacy_percentage"] = round((df["pregnant_count"]/df["women_count"])* 100, 1)
+    df["district"] =  df["district"].apply(lambda x: str(x).capitalize())
+
+    y_cp = df["pregnacy_percentage"]
+    districts = df["district"]
+
+
+    # Creating Figure Handle
+    fig = go.Figure()
+    fig.add_trace(
+        go.Bar(
+            x= districts,
+            y= y_cp,
+            name='Percentage Pregnancy',
+            marker_color='rgb(40,79,141)',
+        ))
+
+    fig.update_layout(
+        title=dict(text='Pregnancy and districts chart', xanchor="center", x=0.5),
+        xaxis_tickfont_size=14,
+        height = 400,
+        xaxis=dict(title="Districts"),
+        yaxis=dict(
+            title='Percentage Pregnancy',
+            titlefont_size=20,
+            tickfont_size=14,
+        ),
+        yaxis2=dict(
+            title="Percentages(%)",
+            overlaying="y",
+            side="right"
+            ),
+        legend=dict(
+            xanchor="left",
+            yanchor="bottom",
+            x=0,
+            y=-0.4,
+        ),
+        template="gridon",
+        bargap=0.3, # gap between bars of adjacent location coordinates.
+        bargroupgap=0.1 # gap between bars of the same location coordinate.
+    )
+    st.plotly_chart(fig, use_container_width=True)

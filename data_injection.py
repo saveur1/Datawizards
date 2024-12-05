@@ -232,7 +232,7 @@ def upload_xlsx_file(xlsx_file):
         }
         # data table
         data_frame = pd.read_excel(xlsx_file)
-        data_frame = data_frame.rename(columns=lambda col: col.strip())
+        data_frame = data_frame.rename(columns=lambda col: str(col).strip().lower())
 
         # Validate required columns
         required_columns = ['v007', 'v005', 'v023', 'v213', 'v155', 'v012', 'v106', 'v013', "v024"]
@@ -253,9 +253,8 @@ def upload_xlsx_file(xlsx_file):
             data_frame["weights"] = data_frame["weights"] / sampling_decimals_offset
             data_frame["currently_pregnant"] = data_frame["currently_pregnant"].apply(transform_pregnancy_status)
             data_frame["literacy"] = data_frame["literacy"].apply(transform_literacy)
-
             # Convert to array of dictionaries
-            array_data = data_frame[list(columns_map.values())].to_dict(orient="records")
+            array_data = data_frame.to_dict(orient="records")
 
             #Remove unwanted records
             array_data = filter_incoming_data(array_data)
@@ -288,6 +287,7 @@ def upload_xlsx_file(xlsx_file):
             
             if st.button("Submit"):
                 upload_data_into_database(survey_wave_name, array_data, xlsx_file)
+
 def upload_csv_file(xlsx_file):
     if xlsx_file is not None:
         columns_map = {
