@@ -20,33 +20,33 @@ def current_pregnancy_chart():
 
     trace_colors =  ['rgb(217, 217, 217)', 'rgb(216, 7, 7)']
     pie_chart_data = [total_women - pregnant_count, pregnant_count]
-    chart_title = f"Pregnancy chart for { st.session_state.session_district }"
-    chart_labels = ['Not Pregnant', 'Pregnant Teenage']
+    chart_title = f"Pregnancies for { st.session_state.session_district } in { st.session_state.session_survey }"
+    chart_labels = ['Not Pregnant cases', 'Pregnant cases']
 
-    # left, middle= st.columns(2)
-    # if left.button("Pregnancy", use_container_width=True, key="pie_chart_left"):
-    #     pie_chart_data = [total_women - pregnant_count, pregnant_count]
-    #     chart_title = f"Pregnancy chart for { st.session_state.session_district }"
-    #     chart_labels = ['Not Pregnant', 'Pregnant Teenage']
-    
-    # if middle.button("Literacy", use_container_width=True, key="pie_chart_right"):
-    #     pie_chart_data = [literate_count, total_women - literate_count]
-    #     chart_title = f"Literacy chart for { st.session_state.session_district }"
-    #     chart_labels = ['Able to read', "can't read at all"]
-
-    trace = go.Pie(labels= chart_labels, values = pie_chart_data, hole=0.5, marker_colors= trace_colors)
+    trace = go.Pie(
+        labels=chart_labels, 
+        values=pie_chart_data, 
+        hole=0.5, 
+        marker_colors=trace_colors
+    )
 
     # Create the layout for the chart
     layout = go.Layout(
         title=dict(
-                text=f'<i>{ chart_title }<i>',
-                x=0.5,
-                xanchor="center"
-            ),
-        showlegend= True,
+            text=f'<i>{chart_title}<i>',
+            x=0.5,
+            xanchor="center"
+        ),
+        showlegend=True,  # Show the legend
         margin=dict(l=0, r=10, b=10, t=40),
         width=300,  # Set the desired width
         height=260,  # Set the desired height
+        legend=dict(
+            orientation="h",  # Horizontal orientation
+            x=0.5,  # Center the legend horizontally
+            xanchor="center",
+            y=-0.1,  # Place the legend below the chart
+        ),
         annotations=[
             dict(
                 text=f'{ "{:,.0f} <br />Total cases".format(total_women) }',
@@ -60,15 +60,16 @@ def current_pregnancy_chart():
     st.plotly_chart(fig, use_container_width=True)
 
 
-def teenage_pregnancy_history():
-    records = st.session_state.years_age_filter
+
+def teenage_pregnancy_history(records):
     #state variable
     filtered_records = records
     district = st.session_state.session_district
 
     if district != "All Districts":
         filtered_records = [data for data in records if str(data["district"]).lower() == str(district).lower()]
-
+    # else:
+    #     filtered_records = [data for data in records if data["survey_round"] == st.session_state.session_survey]
     # Get pregnancy counts for the earliest and latest year
     summary = app_logic.create_upload_summary(filtered_records, "survey_round")
 
@@ -76,7 +77,7 @@ def teenage_pregnancy_history():
     summary = sorted(summary, key=lambda x: x["year"])
 
     # Survey round array
-    survey_rounds = ["R_"+data["survey_round"]  for data in summary ]
+    survey_rounds: list[str] = ["R"+data["survey_round"]  for data in summary ]
 
     # Survey round pregnancy
     survey_pregnancies = [ data["pregnant_count"]  for data in summary ]
@@ -270,20 +271,27 @@ def wealth_quantile_chart():
 
 def pregnancy_choropleth_map():
     records = st.session_state.years_age_filter
+    selected_district_name = st.session_state.session_district  # Selected district or "All Districts"
+    
     rwanda_districts = json.load(open("./District_Boundaries.geojson", "r"))
     district_idmap = {}
 
-    incoming_districts = list({ str(record["district"]).capitalize() for record in records})
+    incoming_districts = list({str(record["district"]).capitalize() for record in records})
 
     # Add ID column and Map district to id
     for feature in rwanda_districts["features"]:
         if feature["properties"]["district"] not in incoming_districts:
-            return "Not ploted"
+            return "Not plotted"
         
         feature["id"] = feature["properties"]["objectid"]
         district_idmap[feature["properties"]["district"]] = feature["id"]
+
+    # Description of map
+    st.info(
+        "This map provides insights into district-level pregnancy data. **Darker colors** indicate higher pregnancy rates, while **lighter colors** represent lower rates. **Hover for details.**"
+    )
         
-    grouped_districts_records = app_logic.create_upload_summary(records, "district")  #Group all data by districts
+    grouped_districts_records = app_logic.create_upload_summary(records, "district")  # Group all data by districts
     df = pd.DataFrame(grouped_districts_records)
     
     df["women_count"] = df["women_count"].apply(lambda x: int(round(x, 0)))
@@ -292,43 +300,79 @@ def pregnancy_choropleth_map():
     if grouped_districts_records:
         df["id"] = df["district"].apply(lambda x: district_idmap[x.capitalize()])
         df["district"] = df["district"].apply(lambda x: str(x).capitalize())
-        df["pregnacy_percentage"] = round((df["pregnant_count"]/df["women_count"])* 100, 1)
-        df["literacy_percentage"] = round((df["literacy_count"]/df["women_count"])* 100, 1)
-    # [[0, '#46e800'], [0.5, '#f3ea00'], [1.0, '#005cab']]
+        df["pregnacy_percentage"] = round((df["pregnant_count"] / df["women_count"]) * 100, 1)
+        df["childbearing_percentage"] = round((df["child_bearing"] / df["women_count"]) * 100, 1)
+        
+        # Format percentages as strings with %
+        df["pregnacy_percentage_label"] = df["pregnacy_percentage"].apply(lambda x: f"{x}%")
+        df["childbearing_percentage_label"] = df["childbearing_percentage"].apply(lambda x: f"{x}%")
+        
+        # Conditional logic for color scale or highlight map
+        if selected_district_name == "All Districts":
+            # Continuous color scale map
+            color_col = "pregnacy_percentage"
+            color_map = px.colors.sequential.Blues
+            color_scale_flag = True
+            hover_data = {
+                "women_count": True,
+                "pregnacy_percentage_label": True,
+                "childbearing_percentage_label": True,
+                "pregnacy_percentage": False,
+                "id": False,
+            }
+        else:
+            # Highlight specific district
+            df["is_selected"] = df["district"].apply(lambda x: x == selected_district_name.capitalize())
+            df["color"] = df["is_selected"].apply(lambda x: st.session_state.session_district if x else "Else")  # Highlight selected district
+            color_col = "color"
+            color_map = {"red": "red", "blue": "blue"}  # Discrete color map
+            color_scale_flag = False
+            hover_data = {
+                "women_count": True,
+                "pregnacy_percentage_label": True,
+                "childbearing_percentage_label": True,
+                "pregnacy_percentage": False,
+                "id": False,
+                "color": False,  # Exclude color from hover data
+            }
+        
         fig = px.choropleth_mapbox(
-                df,
-                locations= "id",
-                geojson= rwanda_districts,
-                color="pregnacy_percentage",
-                hover_name= "district",
-                hover_data= ["women_count", "literacy_percentage"],
-                center={"lat":-1.94, "lon": 29.87},
-                color_continuous_scale= px.colors.sequential.Tealgrn,
-                color_continuous_midpoint=0,
-                mapbox_style="carto-positron",
-                labels= {
-                    "women_count": "Total Women", 
-                    "pregnacy_percentage": "Pregnancy(%)",
-                    "literacy_percentage": "Literacy(%)"
-                },
-                zoom = 7
-            )
-    
+            df,
+            locations="id",
+            geojson=rwanda_districts,
+            color=color_col,
+            hover_name="district",
+            hover_data=hover_data,
+            center={"lat": -1.94, "lon": 29.87},
+            color_continuous_scale=color_map if color_scale_flag else None,
+            mapbox_style="carto-positron",
+            labels={
+                "women_count": "Total Cases",
+                "pregnacy_percentage_label": "Pregnancy",
+                "childbearing_percentage_label": "Child Bearing"
+            },
+            zoom=7
+        )
+        
         fig.update_layout(
-            title=dict(text="<i>Pregnancy and districts map</i>", x=0.5,xanchor="center"),
-            coloraxis_showscale=True,  # This line removes or show the colorscale
-            height = 400,
-            showlegend = True,
+            title=dict(
+                text=f"<i>Pregnancy Rates by { st.session_state.session_district }: {st.session_state.session_survey} Survey</i>",
+                x=0.5,
+                xanchor="center"
+            ),
+            coloraxis_showscale=color_scale_flag,  # Show scale for continuous map
+            height=400,
+            showlegend=not color_scale_flag,  # Disable legend for discrete map
             margin=dict(t=50, b=0, l=0, r=0),
         )
         
-        st.plotly_chart(fig, key="pregnancy_choropleth", use_container_width= True)
+        st.plotly_chart(fig, key="pregnancy_choropleth", use_container_width=True)
+
 
 
 def districts_pregancy_barchat():
     records = st.session_state.years_age_filter
     grouped_districts_records = app_logic.create_upload_summary(records, "district")  #Group all data by districts
-    
     df = pd.DataFrame(grouped_districts_records)
     df["pregnacy_percentage"] = round((df["pregnant_count"]/df["women_count"])* 100, 1)
     df["district"] =  df["district"].apply(lambda x: str(x).capitalize())

@@ -47,7 +47,7 @@ def main():
 
 
      # Current district in View
-    st.markdown(f"<h6 class='page_title' style='text-align:center;font-weight:normal;font-style: italic'>Displaying data for - <strong>{ st.session_state.session_district }</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Women between 15 and 19 years &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Weighted data</strong></h6>", unsafe_allow_html= True)
+    st.markdown(f"<h6 class='page_title' style='text-align:center;font-weight:normal;font-style: italic'>Displaying data for - <strong>{ st.session_state.session_district }</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Women between 15 and 19 years &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Weighted data</strong> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; NISR Hackathon 2024</h6>", unsafe_allow_html= True)
 
     # project main content area
     #introduce small space
@@ -100,12 +100,18 @@ def main():
         #Heat Map
         feedback = pcharts.pregnancy_choropleth_map()
         
-        if feedback == "Not ploted":
+        if feedback == "Not plotted":
+            st.info(
+                "This chart shows pregnancy percentages by district, with bar heights representing pregnancies relative to total women surveyed."
+            )
             pcharts.districts_pregancy_barchat()
     
     with cols4:
         #LINE CHART
-        pcharts.teenage_pregnancy_history()
+        st.info(
+            f"This chart reflect pregnancy history of **{st.session_state.session_district}** from 1992 up to {st.session_state.session_survey}"
+        )
+        pcharts.teenage_pregnancy_history(db_records)
 
     #introduce small space
     st.write("")

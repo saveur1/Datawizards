@@ -204,8 +204,12 @@ def filter_records_basedon_periods(years_records: List):
         st.session_state.filtered_records = years_records
     
     else:
-        district_data = records_grouped_by(years_records)[str(district).lower()]
-        st.session_state.filtered_records = district_data
+        if str(district).lower() in records_grouped_by(years_records):
+            district_data = records_grouped_by(years_records)[str(district).lower()]
+            st.session_state.filtered_records = district_data
+        else:
+            st.session_state.session_district = "All Districts"
+            st.session_state.filtered_records = years_records
 
 def get_percentage(value: float, total: float):
     return ( value / (total or 1) ) * 100
