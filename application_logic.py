@@ -179,9 +179,9 @@ def filter_records_basedon_periods(years_records: List):
 
 
 # PROJECT SIDEBAR
-def project_sidebar(db_records, theme):
+def project_sidebar(db_records: List, theme):
     # Needed data
-    years = list({entry["survey_round"] for entry in db_records})
+    years = sorted(list({entry["survey_round"] for entry in db_records}), reverse=True)
     ages = list({entry["current_age"] for entry in db_records})
     
 
@@ -193,10 +193,9 @@ def project_sidebar(db_records, theme):
     st.markdown("<p style='text-align: center;'>Teenage Pregnancy</p>", unsafe_allow_html=True)
 
     #Years Filter
-    years_options = st.multiselect(
+    years_options = st.selectbox(
         "Select Survey period",
         years,
-        years[:2],
     )
 
     #Ages Filter
@@ -235,8 +234,8 @@ def project_sidebar(db_records, theme):
         st.markdown(f"""
             <div style="margin:0; border-bottom:1px solid rgba(0,0,0,0.2); padding-bottom:5px;margin-top:10px;margin-bottom:5px">
                 <p style="margin:0; padding:0;font-weight:bold"> All Districts</p>
-                <p style="margin:0; padding:0; margin-top:0">{min(years_options)} - {max(years_options)}: <span style="color: #005cab;font-weight: bold">{"{:,.0f}".format(count_frequency(filtered_records, "currently_pregnant", "yes"))} Pregnancy</span></p>
-                <p style="margin:0; padding:0; margin-top:0">Total: { "{:,.0f}".format(len(filtered_records)) } Female Teenagers</p>
+                <p style="margin:0; padding:0; margin-top:0">{ years_options }: <span style="color: #005cab;font-weight: bold">{"{:,.0f}".format(count_frequency(filtered_records, "currently_pregnant", "yes"))} Pregnancy</span></p>
+                <p style="margin:0; padding:0; margin-top:0">Total: { "{:,.0f}".format(total_weights(filtered_records)) } Female Teenagers</p>
             </div>
             """, unsafe_allow_html=True)
 
@@ -252,7 +251,7 @@ def project_sidebar(db_records, theme):
             st.markdown(f"""
             <div style="margin:0; border-bottom:1px solid rgba(0,0,0,0.2); padding-bottom:5px;margin-top:10px;margin-bottom:5px">
                 <p style="margin:0; padding:0;font-weight:bold">{ district.capitalize() }</p>
-                <p style="margin:0; padding:0; margin-top:0">{min(years_options)} - {max(years_options)}: <span style="color: #005cab ;font-weight: bold">{ "{:,.0f}".format(pregnancy_count) } Pregnancy</span></p>
+                <p style="margin:0; padding:0; margin-top:0">{ years_options }: <span style="color: #005cab ;font-weight: bold">{ "{:,.0f}".format(pregnancy_count) } Pregnancy</span></p>
                 <p style="margin:0; padding:0; margin-top:0">Total Female: { "{:,.0f}".format(total_teenagers) } Teenagers</p>
             """, unsafe_allow_html=True)
 
