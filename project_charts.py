@@ -90,7 +90,7 @@ def teenage_pregnancy_history():
         x= survey_rounds,
         y= survey_pregnacy_result,
         mode='lines+markers+text',
-        line_color='red'      
+        line_color='#005cab'      
     ))
 
     fig.update_layout(
@@ -128,7 +128,7 @@ def education_statistics():
         text=[f'{x:,} Women' for x in df_education["Number of Women"]],
         textposition='inside',
         orientation='h',
-        marker_color='#ff4b4b',
+        marker_color='#005cab',
         hovertemplate='%{y}: %{x:,.0f} Women<extra></extra>'
     ))
 
@@ -183,7 +183,7 @@ def provinces_statistics():
         text=[f'{x:,} Women' for x in df['Women Asked']],
         textposition='inside',
         orientation='h',
-        marker_color='green',  # Blue color similar to the image
+        marker_color='#005cab',  # Blue color similar to the image
         hovertemplate='%{y}: %{x:,} Women<extra></extra>'
     ))
 
@@ -238,7 +238,7 @@ def wealth_quantile_chart():
         text=[f'{x:,} Women' for x in df['total_women']],
         textposition='inside',
         orientation='h',
-        marker_color='#ff4b4b',  # Blue color similar to the image
+        marker_color='#005cab',  # Blue color similar to the image
         hovertemplate='%{y}: %{x:,} Women<extra></extra>'
     ))
 
@@ -297,7 +297,7 @@ def pregnancy_choropleth_map():
                 hover_name= "district",
                 hover_data= ["women_count", "literacy_percentage"],
                 center={"lat":-1.94, "lon": 29.87},
-                color_continuous_scale= [[0, '#d0bcbc'], [0.5, '#f89a9a'], [1.0, '#c61818']],
+                color_continuous_scale= [[0, '#46e800'], [0.5, '#f3ea00'], [1.0, '#005cab']],
                 color_continuous_midpoint=0,
                 mapbox_style="carto-positron",
                 labels= {
