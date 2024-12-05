@@ -23,16 +23,16 @@ def current_pregnancy_chart():
     chart_title = f"Pregnancy chart for { st.session_state.session_district }"
     chart_labels = ['Not Pregnant', 'Pregnant Teenage']
 
-    left, middle= st.columns(2)
-    if left.button("Pregnancy", use_container_width=True, key="pie_chart_left"):
-        pie_chart_data = [total_women - pregnant_count, pregnant_count]
-        chart_title = f"Pregnancy chart for { st.session_state.session_district }"
-        chart_labels = ['Not Pregnant', 'Pregnant Teenage']
+    # left, middle= st.columns(2)
+    # if left.button("Pregnancy", use_container_width=True, key="pie_chart_left"):
+    #     pie_chart_data = [total_women - pregnant_count, pregnant_count]
+    #     chart_title = f"Pregnancy chart for { st.session_state.session_district }"
+    #     chart_labels = ['Not Pregnant', 'Pregnant Teenage']
     
-    if middle.button("Literacy", use_container_width=True, key="pie_chart_right"):
-        pie_chart_data = [literate_count, total_women - literate_count]
-        chart_title = f"Literacy chart for { st.session_state.session_district }"
-        chart_labels = ['Able to read', "can't read at all"]
+    # if middle.button("Literacy", use_container_width=True, key="pie_chart_right"):
+    #     pie_chart_data = [literate_count, total_women - literate_count]
+    #     chart_title = f"Literacy chart for { st.session_state.session_district }"
+    #     chart_labels = ['Able to read', "can't read at all"]
 
     trace = go.Pie(labels= chart_labels, values = pie_chart_data, hole=0.5, marker_colors= trace_colors)
 
@@ -43,13 +43,13 @@ def current_pregnancy_chart():
                 x=0.5,
                 xanchor="center"
             ),
-        showlegend=False,  # Hide the legend
-        margin=dict(l=0, r=0, b=0, t=40),
+        showlegend= True,
+        margin=dict(l=0, r=10, b=10, t=40),
         width=300,  # Set the desired width
-        height=200,  # Set the desired height
+        height=260,  # Set the desired height
         annotations=[
             dict(
-                text=f'{ "{:,.0f} <br />Women".format(total_women) }',
+                text=f'{ "{:,.0f} <br />Total cases".format(total_women) }',
                 x=0.5, y=0.5, font_size=20, showarrow=False
             )
         ]
@@ -328,6 +328,7 @@ def pregnancy_choropleth_map():
 def districts_pregancy_barchat():
     records = st.session_state.years_age_filter
     grouped_districts_records = app_logic.create_upload_summary(records, "district")  #Group all data by districts
+    
     df = pd.DataFrame(grouped_districts_records)
     df["pregnacy_percentage"] = round((df["pregnant_count"]/df["women_count"])* 100, 1)
     df["district"] =  df["district"].apply(lambda x: str(x).capitalize())

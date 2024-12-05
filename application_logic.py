@@ -2,33 +2,54 @@ import streamlit as st
 from typing import List
 from collections import defaultdict
 from streamlit_extras.metric_cards import style_metric_cards
+import pandas as pd
 
-# Define custom styles for metrics
-def custom_metric(label, value, color):
-    st.markdown(f"""
-    <div style="text-align: center; padding: 10px; border: 1px solid #ddd; border-radius: 5px;margin-bottom:15px">
-        <p style="margin: 0; font-size: 14px; color: #666;font-weight: bold">{label}</p>
-        <p style="margin: 0; font-size: 24px; font-weight: bold; color: {color};">{value}</p>
-    </div>
-    """, unsafe_allow_html=True)
+# Local files
+import data_injection as file_data
 
 
-def calculate_increate(datas: List, attr1:str):
+
+def calculate_increate(attr1:str):
+    db_records = file_data.get_table_data()
+    survey_name = st.session_state.session_survey
+
     try:
-        # Get pregnancy counts for the earliest and latest year
-        summary = create_upload_summary(datas, "survey_round")
+        # Get pregnancy counts for All data in database
+        summary = create_upload_summary(db_records, "survey_round")
 
         # Sort them by interview year
-        summary = sorted(summary, key=lambda x: x["year"])
+        summary = sorted(summary, key=lambda x: x["survey_round"])
+        
+        # Find the current entry index
+        current_index = next((i for i, entry in enumerate(summary) if entry["survey_round"] == survey_name), None)
 
-        earliest_data = summary[0][attr1]
-        latest_data = summary[-1][attr1]
+        if current_index is None or current_index == 0:
+            # No previous survey to compare or invalid entry
+            return 0
+        
+        # Get the previous survey
+        previous_entry = summary[current_index - 1]    
+        current_entry = summary[current_index]
+        
+        # Calculate percentage change
+        previous_attr = previous_entry[attr1]
+        previous_total = previous_entry["women_count"]
 
-        # Calculate absolute and percentage increase
-        absolute_increase = latest_data - earliest_data
-        percentage_increase = (absolute_increase / earliest_data) * 100
+        current_attr = current_entry[attr1]
+        current_total = current_entry["women_count"]
 
-        return percentage_increase
+        if attr1 == "women_count":
+            return current_total - previous_total
+
+
+        if previous_attr == 0:
+            return 0  # Avoid division by zero
+
+        # percentages
+        previous_year_percent = (previous_attr / previous_total) * 100
+        current_year_percent = (current_attr / current_total) * 100
+        
+        return current_year_percent - previous_year_percent
     
     except:
         return 0
@@ -48,8 +69,8 @@ def object_values(arr: List, attr1: str, attr2: str=""):
         return [data[attr1] for data in arr]
     
 
-def records_based_onyears(records:List, years: List, key_name: str)->List:
-    return [data for data in records if data[key_name] in years] # return array of data for particular year
+def records_based_onyears(records:List, options: List, key_name: str)->List:
+    return [data for data in records if data[key_name] in options] # return array of data for particular year
 
 
 def records_grouped_by(records: List, attr: str = "district"):      
@@ -63,7 +84,7 @@ def records_grouped_by(records: List, attr: str = "district"):
 
 # COUNT PARTICULAR VALUES IN TABLE COLUMN
 def count_frequency(table_datas: List, column: str, value):
-    return int(round(sum(data["weights"] for data in table_datas if str(data[column]).lower() == value), 0))
+    return int(round(sum(data["weights"] for data in table_datas if str(data[column]).lower() == value), 1))
 
 def total_weights(table_datas: List):
     return int(round(sum(data["weights"] for data in table_datas), 0))
@@ -89,7 +110,8 @@ def create_upload_summary(arr_records: List, group_name: str):
                 "literacy_count": 0,
                 "survey_round": "",
                 "year": 0,
-                "district": ""
+                "district": "",
+                "child_bearing": 0
             })
 
     for record in arr_records:
@@ -105,22 +127,28 @@ def create_upload_summary(arr_records: List, group_name: str):
         #District
         result[filter_name]["district"] = filter_name
 
-        #Year
+        # Year
         result[filter_name]["year"] = record["interview_year"]
 
-        #Ages
+        # Ages
         result[filter_name]["ages"] = record["current_age"]
 
-        #Pregnant count
+        # Pregnant count
         if record["currently_pregnant"].lower() == "yes":
             result[filter_name]["pregnant_count"] += record["weights"]
 
-        #Women count
+        # Women count
         result[filter_name]["women_count"] += record["weights"]
 
-        #Female educated count
-        if str(record["literacy"]).lower() != "no":
-            result[filter_name]["literacy_count"] += record["weights"]
+        # Childbearing count
+        if "living_current_pregnancy" in record:
+            if int(record["living_current_pregnancy"]) > 0:
+                result[filter_name]["child_bearing"] += record["weights"]
+
+        # Female educated count
+        if "literacy" in record:
+            if str(record["literacy"]).lower() != "no":
+                result[filter_name]["literacy_count"] += record["weights"]
 
     return list(dict(result).values())
 
@@ -141,27 +169,29 @@ def search_surveys_district(surveys: List, query:str):
 #METRICS CARDS
 def metric_cards():
     filtered_records = st.session_state.filtered_records
+    survey_name = st.session_state.session_survey
+
+    #total teenagers and total child bearing
+    total_child_bearing = sum([record["weights"] for record in filtered_records if int(record["living_current_pregnancy"])>0])
+    total_teenager = total_weights(filtered_records)
     pregnant_teenagers = count_frequency(filtered_records, "currently_pregnant", "yes")
 
-    #totoal teenagers and total educated teenagers
-    total_educated = count_frequency(filtered_records, "literacy", "yes")
-    total_teenager = total_weights(filtered_records)
-
-
-    percentage_educated = (total_educated * 100) // (total_teenager or 1)
+    # Precentages
+    percentage_child_bearing = get_percentage(total_child_bearing, total_teenager)
+    percentage_pregnancies = get_percentage(pregnant_teenagers, total_teenager)
 
     #Pregnancy increase
-    pregnancy_increase = calculate_increate(filtered_records, "pregnant_count")
-    educated_increase = calculate_increate(filtered_records, "literacy_count")
-    teenage_increase = calculate_increate(filtered_records, "women_count")
+    pregnancy_increase = calculate_increate("pregnant_count")
+    educated_increase = calculate_increate("child_bearing")
+    teenage_increase = calculate_increate("women_count")
 
     # Create columns
     col1, col2, col3 = st.columns(3)
 
     # Metrics cards over different columns
-    col1.metric("Teenage Pregnancy", "{:,}".format(int(pregnant_teenagers)), "{:,.2f}%".format(pregnancy_increase))
-    col2.metric("Literate Teenagers", "{:,}%".format(int(percentage_educated)), "{:,.2f}%".format(educated_increase))
-    col3.metric("Female Teenagers", "{:,}".format(int(total_teenager)), "{:,.2f}%".format(teenage_increase))
+    col1.metric(f"Child bearing in { survey_name }", "{:,.1f}%".format(percentage_child_bearing), "{:,.2f}%".format(educated_increase))
+    col2.metric(f"Teen Pregnancy in { survey_name }", "{:,.1f}%".format(percentage_pregnancies), "{:,.2f}%".format(pregnancy_increase))
+    col3.metric("Female Teenagers", "{:,}".format(int(total_teenager)), "{:,.0f}".format(teenage_increase))
 
     style_metric_cards(background_color="auto")
 
@@ -177,11 +207,13 @@ def filter_records_basedon_periods(years_records: List):
         district_data = records_grouped_by(years_records)[str(district).lower()]
         st.session_state.filtered_records = district_data
 
+def get_percentage(value: float, total: float):
+    return ( value / (total or 1) ) * 100
 
 # PROJECT SIDEBAR
 def project_sidebar(db_records: List, theme):
     # Needed data
-    years = sorted(list({entry["survey_round"] for entry in db_records}), reverse=True)
+    survey_round_datas = sorted(list({entry["survey_round"] for entry in db_records}), reverse=True)
     ages = list({entry["current_age"] for entry in db_records})
     
 
@@ -193,10 +225,11 @@ def project_sidebar(db_records: List, theme):
     st.markdown("<p style='text-align: center;'>Teenage Pregnancy</p>", unsafe_allow_html=True)
 
     #Years Filter
-    years_options = st.selectbox(
+    survey_options = st.selectbox(
         "Select Survey period",
-        years,
+        survey_round_datas,
     )
+    st.session_state.session_survey = survey_options
 
     #Ages Filter
     ages_filter = st.multiselect(
@@ -207,11 +240,13 @@ def project_sidebar(db_records: List, theme):
 
     search_district = st.text_input("Search District", placeholder="Kicukiro")
 
-    # Filter records by Years Options
-    filtered_records = records_based_onyears(db_records, years_options, "survey_round")
+    # Filter records by Selected Survey Options
+    filtered_records = records_based_onyears(db_records, survey_options, "survey_round")
 
     #Filter records by age Options
     filtered_records = records_based_onyears(filtered_records, ages_filter, "current_age")
+    
+    # Update survey_and_age session state
     st.session_state.years_age_filter = filtered_records
 
     # Group districts
@@ -227,14 +262,14 @@ def project_sidebar(db_records: List, theme):
 
     
 
-    if years_options:
+    if survey_options:
         # update session state
         filter_records_basedon_periods(filtered_records)
 
         st.markdown(f"""
             <div style="margin:0; border-bottom:1px solid rgba(0,0,0,0.2); padding-bottom:5px;margin-top:10px;margin-bottom:5px">
                 <p style="margin:0; padding:0;font-weight:bold"> All Districts</p>
-                <p style="margin:0; padding:0; margin-top:0">{ years_options }: <span style="color: #005cab;font-weight: bold">{"{:,.0f}".format(count_frequency(filtered_records, "currently_pregnant", "yes"))} Pregnancy</span></p>
+                <p style="margin:0; padding:0; margin-top:0">{ survey_options }: <span style="color: #005cab;font-weight: bold">{"{:,.0f}".format(count_frequency(filtered_records, "currently_pregnant", "yes"))} Pregnancy</span></p>
                 <p style="margin:0; padding:0; margin-top:0">Total: { "{:,.0f}".format(total_weights(filtered_records)) } Female Teenagers</p>
             </div>
             """, unsafe_allow_html=True)
@@ -250,8 +285,8 @@ def project_sidebar(db_records: List, theme):
             
             st.markdown(f"""
             <div style="margin:0; border-bottom:1px solid rgba(0,0,0,0.2); padding-bottom:5px;margin-top:10px;margin-bottom:5px">
-                <p style="margin:0; padding:0;font-weight:bold">{ district.capitalize() }</p>
-                <p style="margin:0; padding:0; margin-top:0">{ years_options }: <span style="color: #005cab ;font-weight: bold">{ "{:,.0f}".format(pregnancy_count) } Pregnancy</span></p>
+                <p style="margin:0; padding:0;font-weight:bold">{ str(district).capitalize() }</p>
+                <p style="margin:0; padding:0; margin-top:0">{ survey_options }: <span style="color: #005cab ;font-weight: bold">{ "{:,.0f}".format(pregnancy_count) } Pregnancy</span></p>
                 <p style="margin:0; padding:0; margin-top:0">Total Female: { "{:,.0f}".format(total_teenagers) } Teenagers</p>
             """, unsafe_allow_html=True)
 

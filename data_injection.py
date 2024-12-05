@@ -11,6 +11,7 @@ from sqlalchemy import func, case
 
 #Local Imports
 import application_logic as app_logic
+import project_assistant as assistant
 
 # DEFINING TEENAGE PREGNANCY TYPES
 class TeenageProps(TypedDict):
@@ -41,13 +42,17 @@ class TeenagePregnancy(Base):
     interview_year      = sa.Column("interview_year", sa.Integer)
     age_range           = sa.Column("age_range", sa.String)
     currently_pregnant  = sa.Column("currently_pregnant", sa.String)
-    literacy            = sa.Column("literacy", sa.String)
+    literacy            = sa.Column("literacy", sa.String, nullable= True)
     current_age         = sa.Column("current_age", sa.Integer)
     education_level     = sa.Column("education_level", sa.String)
     survey_round        = sa.Column("survey_round", sa.String)
     regions             = sa.Column("regions", sa.String)
     wealth_quintile     = sa.Column("wealth_quintile", sa.String, nullable=True)
     weights             = sa.Column("weights", sa.Float)
+    
+    # Newly added columns
+    country             = sa.Column("country", sa.String)
+    living_current_pregnancy = sa.Column("living_current_pregnancy", sa.Float)
 
     def __init__(
             self, 
@@ -55,13 +60,15 @@ class TeenagePregnancy(Base):
             interview_year: int, 
             age_range: str, 
             currently_pregnant: str,
-            literacy: str, 
             current_age: int, 
             education_level: str,
             survey_round: str,
             regions: str,
             weights: float,
-            wealth_quintile: str = None,
+            country: str,
+            living_current_pregnancy: float,
+            literacy: str = None, 
+            wealth_quintile: str = None
         ):
         self.currently_pregnant = currently_pregnant
         self.interview_year     = interview_year
@@ -74,12 +81,16 @@ class TeenagePregnancy(Base):
         self.regions            = regions
         self.wealth_quintile    = wealth_quintile
         self.weights            = weights
+        self.country            = country
+        self.living_current_pregnancy = living_current_pregnancy
 
     def __repr__(self):
         return (f"TeenagePregnancy(district='{self.district}', interview_year={self.interview_year}, "
                 f"age_range='{self.age_range}', currently_pregnant='{self.currently_pregnant}', "
                 f"literacy='{self.literacy}', current_age={self.current_age}, "
-                f"education_level='{self.education_level}', survey_round='{self.survey_round}, regions='{self.regions}, wealth_quitile='{ self.wealth_quintile }', weights='{ self.weights }')")
+                f"education_level='{self.education_level}', survey_round='{self.survey_round}, "
+                f"regions='{self.regions}', wealth_quintile='{self.wealth_quintile}', weights='{self.weights}', "
+                f"country='{self.country}', living_current_pregnancy='{self.living_current_pregnancy}', ")
 
     def to_dict(self):
         return {
@@ -93,13 +104,16 @@ class TeenagePregnancy(Base):
             "survey_round": self.survey_round,
             "regions": self.regions,
             "wealth_quintile": self.wealth_quintile,
-            "weights": self.weights
+            "weights": self.weights,
+            "country": self.country,
+            "living_current_pregnancy": self.living_current_pregnancy,
         }
-    
+
     @classmethod
-    def get_all_as_dict(self, session):
-        records = session.query(self).all()
+    def get_all_as_dict(cls, session):
+        records = session.query(cls).all()
         return [record.to_dict() for record in records]
+
 
 
 # BASIC CONFIGURATIONS
@@ -204,11 +218,12 @@ def round_nearest(value):
 def filter_incoming_data(records: List):
     result = []
     for record in records:
-        if int(str(record["current_age"]).strip() or "30") < 20:
-            district = clean_district(record["district"])
+        if int(str(record["current_age"]).strip() or "30") < 20:    
+            if int(record["interview_year"]) > 2009:
+                district = clean_district(record["district"])
+                record["district"] = district
+            
             region = clean_regions(record["regions"])
-
-            record["district"] = district
             record["regions"] = region
             result.append(record)
 
@@ -225,17 +240,18 @@ def upload_xlsx_file(xlsx_file):
                 'v213' : "currently_pregnant", 
                 'v155' : "literacy", 
                 'v012' : "current_age", 
-                'v106' : "education_level", 
+                'v149' : "education_level", 
                 'v013' : "age_range",
                 'v024' : "regions",
-                'v190' : "wealth_quintile"
+                'v219' : "living_current_pregnancy",
+                'v190' : "wealth_quintile",
         }
         # data table
         data_frame = pd.read_excel(xlsx_file)
         data_frame = data_frame.rename(columns=lambda col: str(col).strip().lower())
-
+        
         # Validate required columns
-        required_columns = ['v007', 'v005', 'v023', 'v213', 'v155', 'v012', 'v106', 'v013', "v024"]
+        required_columns = ['v007', 'v005', 'v023', 'v213', 'v012', 'v149', 'v013', "v024", 'v219']
         columns_valid, missing_columns = app_logic.validate_required_columns(data_frame, required_columns)
         
 
@@ -252,9 +268,12 @@ def upload_xlsx_file(xlsx_file):
             # Transformations on Columns
             data_frame["weights"] = data_frame["weights"] / sampling_decimals_offset
             data_frame["currently_pregnant"] = data_frame["currently_pregnant"].apply(transform_pregnancy_status)
-            data_frame["literacy"] = data_frame["literacy"].apply(transform_literacy)
+
+            # Filter columns_map to include only columns present in the DataFrame
+            available_columns = [new_name for _, new_name in columns_map.items() if new_name in data_frame.columns]
+            
             # Convert to array of dictionaries
-            array_data = data_frame.to_dict(orient="records")
+            array_data = data_frame[available_columns].to_dict(orient="records")
 
             #Remove unwanted records
             array_data = filter_incoming_data(array_data)
@@ -266,27 +285,47 @@ def upload_xlsx_file(xlsx_file):
 
             df = df.rename(columns={
                 "ages": "Ages", 
-                "pregnant_count": "Pregnancy Count", 
-                "women_count": "Total Women",
-                "literacy_count": "Literate Count"
+                "pregnant_count": "Currently Pregnant", 
+                "women_count": "Total Cases",
+                "child_bearing": "Begun Child Bearing"
             })
 
 
-            columns_to_display = ["Ages", "Pregnancy Count", "Literate Count","Total Women"]
+            columns_to_display = ["Ages", "Currently Pregnant", "Begun Child Bearing","Total Cases"]
             filtered_df = df[columns_to_display]
 
             # Remove extra decimal points
-            filtered_df["Pregnancy Count"] = filtered_df["Pregnancy Count"].apply(round_nearest)
-            filtered_df["Literate Count"] = filtered_df["Literate Count"].apply(round_nearest)
-            filtered_df["Total Women"] = filtered_df["Total Women"].apply(round_nearest)
+            filtered_df["Currently Pregnant"] = filtered_df["Currently Pregnant"] / filtered_df["Total Cases"] * 100
+            filtered_df["Currently Pregnant"] = filtered_df["Currently Pregnant"].apply(lambda x: str(round(x,1)) +"%")
+            filtered_df["Total Cases"] = filtered_df["Total Cases"].apply(round_nearest)
+
+            #Child bearing percentage
+            filtered_df["Begun Child Bearing"] = filtered_df["Begun Child Bearing"] / filtered_df["Total Cases"] * 100
+            filtered_df["Begun Child Bearing"] = filtered_df["Begun Child Bearing"].apply(lambda x: str(round(x,1)) +"%")
 
             st.table(filtered_df)
 
             #Input Survey round name
-            survey_wave_name = st.text_input("Enter Survey Wave name", placeholder="2019-20")
+            country_name = st.text_input("Enter Country name", placeholder="Rwanda")
             
-            if st.button("Submit"):
-                upload_data_into_database(survey_wave_name, array_data, xlsx_file)
+            # Extract unique years from the data
+            years_range = list({arr["interview_year"] for arr in array_data})
+
+            # Sort the years (optional but often helpful)
+            years_range.sort()
+
+            # Join the years into a string with a hyphen
+            survey_wave_name = "-".join(map(str, years_range))
+            if len(survey_wave_name) < 3:
+                survey_wave_name = "19"+survey_wave_name
+            
+            
+            cols1, cols2 = st.columns(2)
+
+            if cols1.button("Submit"):
+                upload_data_into_database(country_name, array_data, xlsx_file, survey_wave_name)
+
+            cols2.markdown(f"**Survey Period**: { survey_wave_name }")
 
 def upload_csv_file(xlsx_file):
     if xlsx_file is not None:
@@ -468,26 +507,28 @@ def upload_dta_file(xlsx_file):
                 upload_data_into_database(survey_wave_name, array_data, xlsx_file)
 
 
-def upload_data_into_database(survey_wave_name, array_data, xlsx_file):
+def upload_data_into_database(country_name, array_data, xlsx_file, survey_wave_name=""):
     if not survey_wave_name:
         st.error("Survey wave name is required to identify different surveys periods!")
         return;    
     
     try:
         # Check for existing record with the same Survey wave name
-        exists = session.query(TeenagePregnancy).filter_by(survey_round= survey_wave_name).first()
+        exists = session.query(TeenagePregnancy).filter_by(survey_round= survey_wave_name, country= country_name).first()
         
         if exists:
-            st.error(f"This survey wave name already exists.")
+            st.error(f"This survey period({ survey_wave_name }) data already exists in { country_name }.")
             return
         
         for data in array_data:
             data["survey_round"] = survey_wave_name
+            data["country"] = country_name
 
         insert_multiple_data(array_data)
         st.success("All records was added in database successfully!")
-        xlsx_file = None
-        sleep(3)
+        
+        # Update Ai Model data
+        assistant.main()
         st.rerun()
     
     except IntegrityError:

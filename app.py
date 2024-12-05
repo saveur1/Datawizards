@@ -31,6 +31,9 @@ def main():
 
     if "session_district" not in st.session_state:
             st.session_state.session_district = "All Districts"
+    
+    if "session_survey" not in st.session_state:
+            st.session_state.session_survey = ""
 
     if "years_age_filter" not in st.session_state:
             st.session_state.years_age_filter = db_records
@@ -86,13 +89,17 @@ def main():
     #introduce small space
     st.write("")
 
+    # If No data display Nothing
+    if len(st.session_state.filtered_records) < 1:
+         return st.error('There are no data found in database', icon="🚨")
+
 
     # Heat maps and pregnancy chart history
     cols3, cols4 = st.columns([2,1])
     with cols3:
         #Heat Map
         feedback = pcharts.pregnancy_choropleth_map()
-        print(feedback)
+        
         if feedback == "Not ploted":
             pcharts.districts_pregancy_barchat()
     
@@ -116,8 +123,6 @@ def main():
     with cols6:
         pcharts.wealth_quantile_chart()
 
-    # Update Ai Model data
-    assistant.main()
 
     st.button("Ask AI", icon="💬", key="ai_chart_button", type="primary", on_click= assistant.chat_with_assistant, help="Click to chat with datawizard assistant.")
 
