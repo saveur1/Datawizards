@@ -6,6 +6,10 @@ The dashboard provides an overview of teenage pregnancy trends over time, highli
 
 District boundaries are visualized using GeoJSON data, ensuring precise geographic representation of trends across Rwanda.
 
+## Live Demo
+
+The dashboard is hosted and accessible [https://datawizards-nisr.streamlit.app](https://datawizards-nisr.streamlit.app).
+
 ## Features
 
 - **Trend Visualization**: See changes in teenage pregnancy rates across the Rwanda Demographic and Health Survey periods of 1992, 2000, 2005, 2010-2011, 2014-2015, and 2019-2020.
@@ -19,10 +23,6 @@ District boundaries are visualized using GeoJSON data, ensuring precise geograph
   - Help navigate and interpret the dashboard’s features more effectively.
 - **Excel Template**: Easily upload data using our pre-formatted Excel template, ensuring consistency and simplifying the data input process.  
   - Download the template from [here](https://github.com/saveur1/Datawizards/raw/refs/heads/main/template/file.xlsx).  
-
-## Live Demo
-
-The dashboard is hosted and accessible [https://datawizards-nisr.streamlit.app](https://datawizards-nisr.streamlit.app).
 
 ## Installation
 
