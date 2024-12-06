@@ -1,14 +1,22 @@
 # Rwanda Teenage Pregnancy Trends
 
-A Streamlit dashboard visualizing teenage pregnancy trends in Rwanda, based on data from the Rwanda Demographic and Health Surveys conducted in 2010-2011, 2014-2015, and 2019-2020. This dashboard provides an overview of the data from these years, illustrating changes in teenage pregnancy rates over time.
+A Streamlit dashboard visualizing teenage pregnancy trends in Rwanda, based on data from the **Rwanda Demographic and Health Surveys (Individual Records)** conducted in 1992, 2000, 2005, 2010-2011, 2014-2015, and 2019-2020. These datasets are sourced from the National Institute of Statistics of Rwanda (NISR).
 
-## Features
+The dashboard provides an overview of teenage pregnancy trends over time, highlighting changes in rates and patterns. Additionally, it integrates external datasets from the **[DHS Program](https://dhsprogram.com/)** website, including data from Kenya, Uganda and Tanzania (2022), to demonstrate the compatibility of the dashboard with international data sources.
 
-- **Trend Visualization**: See changes in teenage pregnancy rates across the Rwanda Demographic and Health Survey periods of 2010-2011, 2014-2015, and 2019-2020.
-- **Comparative Analysis**: Gain insights into how teenage pregnancy rates have evolved across the survey periods.
-- **Interactive Filtering**: Adjust filters to focus on specific demographics or geographic regions for detailed insights.
-- **Map Visualization**: Provides an interactive map to visualize district-wise teenage pregnancy rates and regional variations.
-- **Upcoming: Prediction Model**: Uses machine learning to predict future teenage pregnancy rates based on historical data and indicators.
+District boundaries are visualized using GeoJSON data, ensuring precise geographic representation of trends across Rwanda.
+
+## Features  
+
+- **Trend Visualization**: See changes in teenage pregnancy rates across the Rwanda Demographic and Health Survey periods of 1992, 2000, 2005, 2010-2011, 2014-2015, and 2019-2020.  
+- **Comparative Analysis**: Gain insights into how teenage pregnancy rates have evolved across the survey periods, highlighting key patterns and trends.  
+- **Interactive Filtering**: Adjust filters to focus on specific demographics, such as age groups, or geographic regions for detailed insights.  
+- **Map Visualization**: Provides an interactive map to visualize district-wise teenage pregnancy rates and regional variations, powered by GeoJSON data for precise boundary mapping.  
+- **AI Assistant**: Leverage our built-in AI assistant to:  
+  - Provide quick summaries of the data.  
+  - Answer user-specific questions about trends and statistics.  
+  - Offer recommendations based on comparative analyses.  
+  - Help navigate and interpret the dashboard’s features more effectively. 
 
 ## Live Demo
 
@@ -63,8 +71,6 @@ The following microdata datasets from the **Rwanda Demographic and Health Survey
 - **2014-2015**: [RWANDA - Demographic and Health Survey 2014-2015 (Individual Records)](https://microdata.statistics.gov.rw/index.php/catalog/68/data_dictionary)
 - **2019-2020**: [RWANDA - Demographic and Health Survey 2019-2020 (Individual Records)](https://microdata.statistics.gov.rw/index.php/catalog/98/data_dictionary)
 
-> **Note**: Ensure that all links are updated for the correct dataset versions.
-
 ## District Boundaries
 
 The geographic boundaries for Rwanda's districts are included in GeoJSON format, providing accurate district boundaries for mapping:
@@ -75,14 +81,10 @@ The geographic boundaries for Rwanda's districts are included in GeoJSON format,
 
 In addition to the Rwanda datasets, external datasets from the **DHS Program** website are used to showcase the dashboard's flexibility in handling data from other countries. These datasets include:
 
-- **Kenya Standard DHS 2022 data**: [Kenya Standard DHS 2022](https://dhsprogram.com/data/dataset/Kenya_Standard-DHS_2022.cfm?flag=1)  
-   *Used to demonstrate compatibility with data from Kenya.*
-
-- **Uganda Standard DHS 2016 data**: [Uganda Standard DHS 2016](https://dhsprogram.com/data/dataset/Uganda_Standard-DHS_2016.cfm?flag=1)  
-   *Used to demonstrate compatibility with data from Uganda.*
-
-- **Tanzania Standard DHS 2022 data**: [Tanzania Standard DHS 2022](https://dhsprogram.com/data/dataset/Tanzania_Standard-DHS_2022.cfm?flag=1)  
-   *Used to demonstrate compatibility with data from Tanzania.*
+- **Kenya Standard DHS 2022 data**: [Kenya Standard DHS 2022](https://dhsprogram.com/data/dataset/Kenya_Standard-DHS_2022.cfm?flag=1)*Used to demonstrate compatibility with data from Kenya.*
+- **Uganda Standard DHS 2016 data**: [Uganda Standard DHS 2016](https://dhsprogram.com/data/dataset/Uganda_Standard-DHS_2016.cfm?flag=1)*Used to demonstrate compatibility with data from Uganda.*
+- **Tanzania Standard DHS 2022 data**: [Tanzania Standard DHS 2022](https://dhsprogram.com/data/dataset/Tanzania_Standard-DHS_2022.cfm?flag=1)
+  *Used to demonstrate compatibility with data from Tanzania.*
 
 These external datasets help provide cross-country comparisons and validate the dashboard's ability to integrate and display international data.
 
@@ -90,12 +92,33 @@ These external datasets help provide cross-country comparisons and validate the 
 
 1. **Data Extraction**
 
-   - From each dataset, we extracted variables related to interview year(v007),stratification for sampling(v023), currently pregnant(v213,) Literacy(v155), Responder's current age(v012), education level(v106), age in 5 years group(v013), and Wealth index(v190).
+   - From each dataset, we extracted variables related to year of interview(v007), women's individual sample weight (6 decimals)(v005),respondent's current age (v012),age in 5 years group(v013) stratification for sampling(v023),region (v024),education level(v149),wealth index combined (v190),currently pregnant (v213), living children + current pregnancy (v219),
    - Example: In the 2019-2020 dataset, the "Individual Records (Women)" table was filtered to include only data for women aged 15-19.
-2. **Data Cleaning**
 
-   - Removed incomplete or inconsistent records, such as missing age or pregnancy data.
-   - Harmonized variables across survey years to ensure compatibility, e.g., standardizing district names.
+#### **Export Data to CSV from Stata (Using GUI)**
+
+Follow these steps to export the data from **Stata** into a CSV file using the GUI:
+
+1. Open Stata and load the dataset containing the variables you want to export.
+2. Go to the **File** menu in the top navigation bar.
+3. Select **Export** and then choose **Data to Excel spreadsheet (*.xls; *.xlsx; *.csv)**.
+4. In the **Export Data** dialog box:
+   - Select the **Variables to Export** by clicking on the dropdown and choosing the variables needed (e.g., age, district, pregnancy status).
+   - Choose **CSV file** as the export format.
+   - Specify the file name and location where the CSV file will be saved.
+5. Click **OK** to export the data.
+6. Navigate to the saved location to verify the exported CSV file.
+
+#### **Upload the CSV File to the Dashboard**
+
+1. Navigate to the "Upload Data" section in the Streamlit dashboard.
+2. Use the file upload interface to select the CSV file generated from Stata.
+3. Confirm the upload to visualize and process the data within the system.
+
+ **Data Cleaning**
+
+- Removed incomplete or inconsistent records, such as missing age or pregnancy data.
+- Harmonized variables across survey years to ensure compatibility, e.g., standardizing district names.
 
 ## License
 
