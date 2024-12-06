@@ -217,8 +217,8 @@ def get_percentage(value: float, total: float):
 # PROJECT SIDEBAR
 def project_sidebar(db_records: List, theme):
     # Needed data
-    survey_round_datas = sorted(list({entry["survey_round"] for entry in db_records}), reverse=True)
     ages = list({entry["current_age"] for entry in db_records})
+    country_datas = list({entry["country"] for entry in db_records})
     
 
     # Display logo
@@ -227,6 +227,16 @@ def project_sidebar(db_records: List, theme):
     
     # Sub Title
     st.markdown("<p style='text-align: center;'>Teenage Pregnancy</p>", unsafe_allow_html=True)
+    
+    #Years Filter
+    country_option = st.selectbox(
+        "Select Country",
+        country_datas,
+    )
+
+    # Filter records by Selected country
+    filtered_records = records_based_onyears(db_records, country_option, "country")
+    survey_round_datas = sorted(list({entry["survey_round"] for entry in filtered_records}), reverse=True)
 
     #Years Filter
     survey_options = st.selectbox(
