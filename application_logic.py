@@ -7,7 +7,9 @@ from streamlit_extras.metric_cards import style_metric_cards
 
 def calculate_increate(db_records, attr1:str):
     survey_name = st.session_state.session_survey
-
+    country = list({record["country"] for record in st.session_state.filtered_records})
+    db_records = [record for record in db_records if record["country"] in country]
+    
     try:
         # Get pregnancy counts for All data in database
         summary = create_upload_summary(db_records, "survey_round")
@@ -23,7 +25,7 @@ def calculate_increate(db_records, attr1:str):
             return 0
         
         # Get the previous survey
-        previous_entry = summary[current_index - 1]    
+        previous_entry = summary[current_index - 1]  
         current_entry = summary[current_index]
         
         # Calculate percentage change

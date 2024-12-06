@@ -454,7 +454,6 @@ def pregnancy_choropleth_map():
 
     # Add ID to Pregnancy dataframe
     if grouped_districts_records:
-        print(df["district"].unique())
         df["id"] = df["district"].apply(lambda x: district_idmap[str(x).capitalize()])
         df["district"] = df["district"].apply(lambda x: str(x).capitalize())
         df["pregnacy_percentage"] = round((df["pregnant_count"] / df["women_count"]) * 100, 1)
