@@ -50,18 +50,18 @@ The dashboard is hosted and accessible [https://datawizards-nisr.streamlit.app](
 
 # Data Sources for Dashboard
 
-The data used in this dashboard is primarily derived from the **Rwanda Demographic and Health Surveys (Women Records)** from the National Institute of Statistics of Rwanda (NISR). Additionally, external datasets are sourced from the DHS Program website to demonstrate the dashboard's compatibility with data from other countries.
+The data used in this dashboard is primarily derived from the **Rwanda Demographic and Health Surveys (Individual Records)** from the National Institute of Statistics of Rwanda (NISR). Additionally, external datasets are sourced from the DHS Program website to demonstrate the dashboard's compatibility with data from other countries.
 
 ## Microdata Datasets
 
-The following microdata datasets from the **Rwanda Demographic and Health Surveys (Women Records)** are used:
+The following microdata datasets from the **Rwanda Demographic and Health Surveys (Individual Records)** are used:
 
-- **1992**: [RWANDA - Demographic Health Survey 1992 (Women Records)](https://microdata.statistics.gov.rw/index.php/catalog/6)
-- **2000**: [RWANDA - Demographic Health Survey 2000 (Women Records)](https://microdata.statistics.gov.rw/index.php/catalog/11)
-- **2005**: [RWANDA - Demographic Health Survey 2005 (Women Records)](https://microdata.statistics.gov.rw/index.php/catalog/14)
-- **2010-2011**: [RWANDA - Demographic and Health Survey 2010-2011 (Women Records)](https://microdata.statistics.gov.rw/index.php/catalog/4/data_dictionary)
-- **2014-2015**: [RWANDA - Demographic and Health Survey 2014-2015 (Women Records)](https://microdata.statistics.gov.rw/index.php/catalog/68/data_dictionary)
-- **2019-2020**: [RWANDA - Demographic and Health Survey 2019-2020 (Women Records)](https://microdata.statistics.gov.rw/index.php/catalog/98/data_dictionary)
+- **1992**: [RWANDA - Demographic Health Survey 1992 (Individual Records)](https://microdata.statistics.gov.rw/index.php/catalog/6)
+- **2000**: [RWANDA - Demographic Health Survey 2000 (Individual Records)](https://microdata.statistics.gov.rw/index.php/catalog/11)
+- **2005**: [RWANDA - Demographic Health Survey 2005 (Individual Records)](https://microdata.statistics.gov.rw/index.php/catalog/14)
+- **2010-2011**: [RWANDA - Demographic and Health Survey 2010-2011 (Individual Records)](https://microdata.statistics.gov.rw/index.php/catalog/4/data_dictionary)
+- **2014-2015**: [RWANDA - Demographic and Health Survey 2014-2015 (Individual Records)](https://microdata.statistics.gov.rw/index.php/catalog/68/data_dictionary)
+- **2019-2020**: [RWANDA - Demographic and Health Survey 2019-2020 (Individual Records)](https://microdata.statistics.gov.rw/index.php/catalog/98/data_dictionary)
 
 > **Note**: Ensure that all links are updated for the correct dataset versions.
 
