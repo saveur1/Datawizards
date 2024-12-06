@@ -66,12 +66,15 @@ def teenage_pregnancy_history(records):
     district = st.session_state.session_district
     survey_name = st.session_state.session_survey
 
+    countries = list({record["country"] for record in st.session_state.filtered_records })
+
+
     if district != "All Districts":
         filtered_records = [data for data in records if str(data["district"]).lower() == str(district).lower()]
     
-    # filter out ages
+    # filter out ages and countries
     selsected_ages = list({ record["current_age"] for record in st.session_state.filtered_records})
-    filtered_records = [record for record in records if record["current_age"] in selsected_ages]
+    filtered_records = [record for record in records if ( record["current_age"] in selsected_ages and record["country"] in countries ) ]
     
     # Get pregnancy counts for the earliest and latest year
     summary = app_logic.create_upload_summary(filtered_records, "survey_round")
@@ -451,7 +454,8 @@ def pregnancy_choropleth_map():
 
     # Add ID to Pregnancy dataframe
     if grouped_districts_records:
-        df["id"] = df["district"].apply(lambda x: district_idmap[x.capitalize()])
+        print(df["district"].unique())
+        df["id"] = df["district"].apply(lambda x: district_idmap[str(x).capitalize()])
         df["district"] = df["district"].apply(lambda x: str(x).capitalize())
         df["pregnacy_percentage"] = round((df["pregnant_count"] / df["women_count"]) * 100, 1)
         df["childbearing_percentage"] = round((df["child_bearing"] / df["women_count"]) * 100, 1)
