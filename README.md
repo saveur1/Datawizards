@@ -50,10 +50,6 @@ The dashboard is hosted and accessible [https://datawizards-nisr.streamlit.app](
 
 # Data Sources for Dashboard
 
-The data used in this dashboard is derived from the **Rwanda Demographic and Health Surveys (Women Records)** for the following years:
-
-# Data Sources for Dashboard
-
 The data used in this dashboard is primarily derived from the **Rwanda Demographic and Health Surveys (Women Records)** from the National Institute of Statistics of Rwanda (NISR). Additionally, external datasets are sourced from the DHS Program website to demonstrate the dashboard's compatibility with data from other countries.
 
 ## Microdata Datasets
