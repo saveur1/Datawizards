@@ -3,13 +3,9 @@ from typing import List
 from collections import defaultdict
 from streamlit_extras.metric_cards import style_metric_cards
 
-# Local files
-import data_injection as file_data
 
 
-
-def calculate_increate(attr1:str):
-    db_records = file_data.get_table_data()
+def calculate_increate(db_records, attr1:str):
     survey_name = st.session_state.session_survey
 
     try:
@@ -171,7 +167,7 @@ def search_surveys_district(surveys: List, query:str):
     
 
 #METRICS CARDS
-def metric_cards():
+def metric_cards(db_records: List):
     filtered_records = st.session_state.filtered_records
     survey_name = st.session_state.session_survey
 
@@ -185,9 +181,9 @@ def metric_cards():
     percentage_pregnancies = get_percentage(pregnant_teenagers, total_teenager)
 
     #Pregnancy increase
-    pregnancy_increase = calculate_increate("pregnant_count")
-    educated_increase = calculate_increate("child_bearing")
-    teenage_increase = calculate_increate("women_count")
+    pregnancy_increase = calculate_increate(db_records, "pregnant_count")
+    educated_increase = calculate_increate(db_records, "child_bearing")
+    teenage_increase = calculate_increate(db_records, "women_count")
 
     # Create columns
     col1, col2, col3 = st.columns(3)

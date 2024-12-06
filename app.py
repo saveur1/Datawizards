@@ -78,7 +78,7 @@ def main():
              st.error(f"An error occurred: {e}")
 
         #Metric cards
-        appl.metric_cards()
+        appl.metric_cards(db_records)
 
     with cols2:
         # Pie chart
