@@ -1,8 +1,1171 @@
 
-        A Streamlit dashboard visualizing teenage pregnancy trends in Rwanda for teenager ranging from 15 to 19, 
-        based on data from the Rwanda Demographic and Health Surveys conducted in 2010-2011, 2014-2015, and 2019-2020.
-        This dashboard provides an overview of the data from these years, Note that: datasets are from NISR website and DHS Program website.
-        illustrating changes in teenage pregnancy rates over time.
-    The following are data for 1992 Survey round in each district: rural District(Pregnant Count=35, Total Women Teenager Count=1369, Total Female Who begun Child bearing=138, Survey Round='1992')urban District(Pregnant Count=1, Total Women Teenager Count=95, Total Female Who begun Child bearing=9, Survey Round='1992')The following are data for 2000 Survey round in each district: kigali ville (pvk) District(Pregnant Count=4, Total Women Teenager Count=189, Total Female Who begun Child bearing=13, Survey Round='2000')kigali rurale District(Pregnant Count=5, Total Women Teenager Count=371, Total Female Who begun Child bearing=18, Survey Round='2000')kibungo District(Pregnant Count=8, Total Women Teenager Count=215, Total Female Who begun Child bearing=13, Survey Round='2000')butare - autre villes District(Pregnant Count=0, Total Women Teenager Count=21, Total Female Who begun Child bearing=1, Survey Round='2000')cyangugu District(Pregnant Count=6, Total Women Teenager Count=212, Total Female Who begun Child bearing=8, Survey Round='2000')gikongoro District(Pregnant Count=4, Total Women Teenager Count=156, Total Female Who begun Child bearing=8, Survey Round='2000')ruhengeri District(Pregnant Count=17, Total Women Teenager Count=288, Total Female Who begun Child bearing=36, Survey Round='2000')gisenyi District(Pregnant Count=9, Total Women Teenager Count=278, Total Female Who begun Child bearing=28, Survey Round='2000')kibuye District(Pregnant Count=2, Total Women Teenager Count=113, Total Female Who begun Child bearing=7, Survey Round='2000')gitarama District(Pregnant Count=0, Total Women Teenager Count=254, Total Female Who begun Child bearing=6, Survey Round='2000')byumba District(Pregnant Count=11, Total Women Teenager Count=224, Total Female Who begun Child bearing=18, Survey Round='2000')umutara District(Pregnant Count=2, Total Women Teenager Count=81, Total Female Who begun Child bearing=6, Survey Round='2000')butare District(Pregnant Count=3, Total Women Teenager Count=215, Total Female Who begun Child bearing=9, Survey Round='2000')The following are data for 2005 Survey round in each district: gitarama District(Pregnant Count=2, Total Women Teenager Count=258, Total Female Who begun Child bearing=11, Survey Round='2005')umutara District(Pregnant Count=2, Total Women Teenager Count=106, Total Female Who begun Child bearing=7, Survey Round='2005')kibuye District(Pregnant Count=1, Total Women Teenager Count=155, Total Female Who begun Child bearing=5, Survey Round='2005')ville de kigali District(Pregnant Count=2, Total Women Teenager Count=226, Total Female Who begun Child bearing=13, Survey Round='2005')kibungo District(Pregnant Count=0, Total Women Teenager Count=262, Total Female Who begun Child bearing=8, Survey Round='2005')gisenyi District(Pregnant Count=4, Total Women Teenager Count=300, Total Female Who begun Child bearing=12, Survey Round='2005')cyangugu District(Pregnant Count=1, Total Women Teenager Count=202, Total Female Who begun Child bearing=7, Survey Round='2005')kigali ngali District(Pregnant Count=3, Total Women Teenager Count=225, Total Female Who begun Child bearing=11, Survey Round='2005')byumba District(Pregnant Count=3, Total Women Teenager Count=171, Total Female Who begun Child bearing=5, Survey Round='2005')butare District(Pregnant Count=5, Total Women Teenager Count=242, Total Female Who begun Child bearing=6, Survey Round='2005')gikongoro District(Pregnant Count=3, Total Women Teenager Count=147, Total Female Who begun Child bearing=8, Survey Round='2005')ruhengeri District(Pregnant Count=1, Total Women Teenager Count=291, Total Female Who begun Child bearing=7, Survey Round='2005')The following are data for 2010-2011 Survey round in each district: huye District(Pregnant Count=2, Total Women Teenager Count=74, Total Female Who begun Child bearing=5, Survey Round='2010-2011')gatsibo District(Pregnant Count=0, Total Women Teenager Count=140, Total Female Who begun Child bearing=7, Survey Round='2010-2011')ngororero District(Pregnant Count=0, Total Women Teenager Count=121, Total Female Who begun Child bearing=6, Survey Round='2010-2011')kirehe District(Pregnant Count=3, Total Women Teenager Count=90, Total Female Who begun Child bearing=9, Survey Round='2010-2011')bugesera District(Pregnant Count=6, Total Women Teenager Count=114, Total Female Who begun Child bearing=13, Survey Round='2010-2011')kicukiro District(Pregnant Count=0, Total Women Teenager Count=103, Total Female Who begun Child bearing=3, Survey Round='2010-2011')gakenke District(Pregnant Count=2, Total Women Teenager Count=101, Total Female Who begun Child bearing=7, Survey Round='2010-2011')rulindo District(Pregnant Count=0, Total Women Teenager Count=100, Total Female Who begun Child bearing=4, Survey Round='2010-2011')rwamagana District(Pregnant Count=3, Total Women Teenager Count=96, Total Female Who begun Child bearing=6, Survey Round='2010-2011')kayonza District(Pregnant Count=0, Total Women Teenager Count=97, Total Female Who begun Child bearing=4, Survey Round='2010-2011')ruhango District(Pregnant Count=0, Total Women Teenager Count=82, Total Female Who begun Child bearing=2, Survey Round='2010-2011')karongi District(Pregnant Count=1, Total Women Teenager Count=84, Total Female Who begun Child bearing=3, Survey Round='2010-2011')nyabihu District(Pregnant Count=1, Total Women Teenager Count=89, Total Female Who begun Child bearing=4, Survey Round='2010-2011')nyanza District(Pregnant Count=1, Total Women Teenager Count=73, Total Female Who begun Child bearing=3, Survey Round='2010-2011')rubavu District(Pregnant Count=3, Total Women Teenager Count=123, Total Female Who begun Child bearing=12, Survey Round='2010-2011')burera District(Pregnant Count=2, Total Women Teenager Count=82, Total Female Who begun Child bearing=6, Survey Round='2010-2011')nyagatare District(Pregnant Count=2, Total Women Teenager Count=91, Total Female Who begun Child bearing=7, Survey Round='2010-2011')nyarugenge District(Pregnant Count=1, Total Women Teenager Count=92, Total Female Who begun Child bearing=7, Survey Round='2010-2011')gicumbi District(Pregnant Count=0, Total Women Teenager Count=95, Total Female Who begun Child bearing=1, Survey Round='2010-2011')ngoma District(Pregnant Count=3, Total Women Teenager Count=80, Total Female Who begun Child bearing=9, Survey Round='2010-2011')nyaruguru District(Pregnant Count=1, Total Women Teenager Count=85, Total Female Who begun Child bearing=3, Survey Round='2010-2011')muhanga District(Pregnant Count=2, Total Women Teenager Count=66, Total Female Who begun Child bearing=5, Survey Round='2010-2011')rutsiro District(Pregnant Count=1, Total Women Teenager Count=99, Total Female Who begun Child bearing=3, Survey Round='2010-2011')gasabo District(Pregnant Count=2, Total Women Teenager Count=137, Total Female Who begun Child bearing=11, Survey Round='2010-2011')nyamasheke District(Pregnant Count=1, Total Women Teenager Count=140, Total Female Who begun Child bearing=7, Survey Round='2010-2011')nyamagabe District(Pregnant Count=1, Total Women Teenager Count=101, Total Female Who begun Child bearing=4, Survey Round='2010-2011')gisagara District(Pregnant Count=1, Total Women Teenager Count=83, Total Female Who begun Child bearing=7, Survey Round='2010-2011')musanze District(Pregnant Count=1, Total Women Teenager Count=125, Total Female Who begun Child bearing=9, Survey Round='2010-2011')kamonyi District(Pregnant Count=1, Total Women Teenager Count=78, Total Female Who begun Child bearing=3, Survey Round='2010-2011')rusizi District(Pregnant Count=1, Total Women Teenager Count=107, Total Female Who begun Child bearing=7, Survey Round='2010-2011')The following are data for 2014-2015 Survey round in each district: huye District(Pregnant Count=1, Total Women Teenager Count=87, Total Female Who begun Child bearing=8, Survey Round='2014-2015')gatsibo District(Pregnant Count=6, Total Women Teenager Count=126, Total Female Who begun Child bearing=20, Survey Round='2014-2015')ngororero District(Pregnant Count=1, Total Women Teenager Count=78, Total Female Who begun Child bearing=5, Survey Round='2014-2015')kirehe District(Pregnant Count=0, Total Women Teenager Count=52, Total Female Who begun Child bearing=2, Survey Round='2014-2015')bugesera District(Pregnant Count=2, Total Women Teenager Count=71, Total Female Who begun Child bearing=6, Survey Round='2014-2015')kicukiro District(Pregnant Count=2, Total Women Teenager Count=91, Total Female Who begun Child bearing=6, Survey Round='2014-2015')gakenke District(Pregnant Count=1, Total Women Teenager Count=83, Total Female Who begun Child bearing=4, Survey Round='2014-2015')rulindo District(Pregnant Count=0, Total Women Teenager Count=78, Total Female Who begun Child bearing=2, Survey Round='2014-2015')rwamagana District(Pregnant Count=1, Total Women Teenager Count=93, Total Female Who begun Child bearing=10, Survey Round='2014-2015')kayonza District(Pregnant Count=1, Total Women Teenager Count=81, Total Female Who begun Child bearing=8, Survey Round='2014-2015')ruhango District(Pregnant Count=1, Total Women Teenager Count=86, Total Female Who begun Child bearing=7, Survey Round='2014-2015')karongi District(Pregnant Count=0, Total Women Teenager Count=82, Total Female Who begun Child bearing=5, Survey Round='2014-2015')nyabihu District(Pregnant Count=1, Total Women Teenager Count=73, Total Female Who begun Child bearing=5, Survey Round='2014-2015')nyanza District(Pregnant Count=3, Total Women Teenager Count=64, Total Female Who begun Child bearing=3, Survey Round='2014-2015')rubavu District(Pregnant Count=1, Total Women Teenager Count=95, Total Female Who begun Child bearing=5, Survey Round='2014-2015')burera District(Pregnant Count=3, Total Women Teenager Count=118, Total Female Who begun Child bearing=6, Survey Round='2014-2015')nyagatare District(Pregnant Count=2, Total Women Teenager Count=113, Total Female Who begun Child bearing=8, Survey Round='2014-2015')nyarugenge District(Pregnant Count=3, Total Women Teenager Count=91, Total Female Who begun Child bearing=8, Survey Round='2014-2015')gicumbi District(Pregnant Count=1, Total Women Teenager Count=115, Total Female Who begun Child bearing=3, Survey Round='2014-2015')ngoma District(Pregnant Count=4, Total Women Teenager Count=93, Total Female Who begun Child bearing=10, Survey Round='2014-2015')nyaruguru District(Pregnant Count=3, Total Women Teenager Count=69, Total Female Who begun Child bearing=5, Survey Round='2014-2015')muhanga District(Pregnant Count=0, Total Women Teenager Count=77, Total Female Who begun Child bearing=4, Survey Round='2014-2015')rutsiro District(Pregnant Count=0, Total Women Teenager Count=60, Total Female Who begun Child bearing=3, Survey Round='2014-2015')gasabo District(Pregnant Count=7, Total Women Teenager Count=175, Total Female Who begun Child bearing=20, Survey Round='2014-2015')nyamasheke District(Pregnant Count=1, Total Women Teenager Count=71, Total Female Who begun Child bearing=2, Survey Round='2014-2015')nyamagabe District(Pregnant Count=3, Total Women Teenager Count=111, Total Female Who begun Child bearing=4, Survey Round='2014-2015')gisagara District(Pregnant Count=1, Total Women Teenager Count=83, Total Female Who begun Child bearing=2, Survey Round='2014-2015')musanze District(Pregnant Count=1, Total Women Teenager Count=131, Total Female Who begun Child bearing=8, Survey Round='2014-2015')kamonyi District(Pregnant Count=0, Total Women Teenager Count=88, Total Female Who begun Child bearing=4, Survey Round='2014-2015')rusizi District(Pregnant Count=1, Total Women Teenager Count=134, Total Female Who begun Child bearing=9, Survey Round='2014-2015')The following are data for 2019-2020 Survey round in each district: gasabo District(Pregnant Count=9, Total Women Teenager Count=194, Total Female Who begun Child bearing=12, Survey Round='2019-2020')gisagara District(Pregnant Count=2, Total Women Teenager Count=86, Total Female Who begun Child bearing=5, Survey Round='2019-2020')gakenke District(Pregnant Count=0, Total Women Teenager Count=98, Total Female Who begun Child bearing=3, Survey Round='2019-2020')kayonza District(Pregnant Count=2, Total Women Teenager Count=124, Total Female Who begun Child bearing=11, Survey Round='2019-2020')gatsibo District(Pregnant Count=4, Total Women Teenager Count=156, Total Female Who begun Child bearing=14, Survey Round='2019-2020')rutsiro District(Pregnant Count=0, Total Women Teenager Count=99, Total Female Who begun Child bearing=2, Survey Round='2019-2020')karongi District(Pregnant Count=0, Total Women Teenager Count=80, Total Female Who begun Child bearing=0, Survey Round='2019-2020')muhanga District(Pregnant Count=3, Total Women Teenager Count=72, Total Female Who begun Child bearing=8, Survey Round='2019-2020')gicumbi District(Pregnant Count=1, Total Women Teenager Count=98, Total Female Who begun Child bearing=3, Survey Round='2019-2020')musanze District(Pregnant Count=3, Total Women Teenager Count=123, Total Female Who begun Child bearing=7, Survey Round='2019-2020')nyarugenge District(Pregnant Count=1, Total Women Teenager Count=89, Total Female Who begun Child bearing=5, Survey Round='2019-2020')nyamagabe District(Pregnant Count=1, Total Women Teenager Count=84, Total Female Who begun Child bearing=2, Survey Round='2019-2020')nyagatare District(Pregnant Count=1, Total Women Teenager Count=165, Total Female Who begun Child bearing=10, Survey Round='2019-2020')bugesera District(Pregnant Count=2, Total Women Teenager Count=132, Total Female Who begun Child bearing=7, Survey Round='2019-2020')nyabihu District(Pregnant Count=2, Total Women Teenager Count=94, Total Female Who begun Child bearing=5, Survey Round='2019-2020')nyanza District(Pregnant Count=2, Total Women Teenager Count=98, Total Female Who begun Child bearing=7, Survey Round='2019-2020')huye District(Pregnant Count=1, Total Women Teenager Count=68, Total Female Who begun Child bearing=4, Survey Round='2019-2020')ruhango District(Pregnant Count=1, Total Women Teenager Count=84, Total Female Who begun Child bearing=3, Survey Round='2019-2020')rusizi District(Pregnant Count=2, Total Women Teenager Count=88, Total Female Who begun Child bearing=4, Survey Round='2019-2020')ngororero District(Pregnant Count=1, Total Women Teenager Count=93, Total Female Who begun Child bearing=6, Survey Round='2019-2020')kicukiro District(Pregnant Count=1, Total Women Teenager Count=114, Total Female Who begun Child bearing=1, Survey Round='2019-2020')ngoma District(Pregnant Count=3, Total Women Teenager Count=223, Total Female Who begun Child bearing=7, Survey Round='2019-2020')rubavu District(Pregnant Count=2, Total Women Teenager Count=149, Total Female Who begun Child bearing=8, Survey Round='2019-2020')burera District(Pregnant Count=1, Total Women Teenager Count=104, Total Female Who begun Child bearing=1, Survey Round='2019-2020')rwamagana District(Pregnant Count=0, Total Women Teenager Count=84, Total Female Who begun Child bearing=7, Survey Round='2019-2020')kirehe District(Pregnant Count=1, Total Women Teenager Count=105, Total Female Who begun Child bearing=7, Survey Round='2019-2020')kamonyi District(Pregnant Count=1, Total Women Teenager Count=111, Total Female Who begun Child bearing=5, Survey Round='2019-2020')nyaruguru District(Pregnant Count=2, Total Women Teenager Count=79, Total Female Who begun Child bearing=3, Survey Round='2019-2020')nyamasheke District(Pregnant Count=0, Total Women Teenager Count=91, Total Female Who begun Child bearing=2, Survey Round='2019-2020')rulindo District(Pregnant Count=1, Total Women Teenager Count=75, Total Female Who begun Child bearing=7, Survey Round='2019-2020')
-                The following are summary list of data where country is rwanda, for each survey round:
-             Survey(Percentage Pregnant=2%, Total Women Teenager Count=15637, Percentage Who begun Child bearing=6%')
+    A Streamlit dashboard visualizing teenage pregnancy trends in Rwanda for teenager ranging from 15 to 19, 
+    based on data from the Rwanda Demographic and Health Surveys conducted in 2010-2011, 2014-2015, and 2019-2020.
+    This dashboard provides an overview of the data from these years, Note that: datasets are from NISR website and DHS Program website.
+    illustrating changes in teenage pregnancy rates over time.
+    Terms and explanations:
+    hello, hi, hey, greetings, what's u, howdy: These are greetings, Answer for these is "I'm ready to answer your questions. Do you have any questions about the teenage pregnancy data I have access to?"
+    bye, goodbye, see you, take care: these are words user use to indicate that they are about to close chat and AI should respond like "Goodbye! Let me know if you need help with anything else."
+    Survey rounds in Rwanda: take period of five years between each.
+    The following are data for 1992 Survey round in each district: rural District:
+Pregnant Count=35,
+ Total Women Teenager Count=1369, 
+Total Female Who begun Child bearing=138, 
+Survey Round='1992',
+Country='Rwanda'
+
+urban District:
+Pregnant Count=1,
+ Total Women Teenager Count=95, 
+Total Female Who begun Child bearing=9, 
+Survey Round='1992',
+Country='Rwanda'
+
+The following are data for 2000 Survey round in each district: kigali ville (pvk) District:
+Pregnant Count=4,
+ Total Women Teenager Count=189, 
+Total Female Who begun Child bearing=13, 
+Survey Round='2000',
+Country='Rwanda'
+
+kigali rurale District:
+Pregnant Count=5,
+ Total Women Teenager Count=371, 
+Total Female Who begun Child bearing=18, 
+Survey Round='2000',
+Country='Rwanda'
+
+kibungo District:
+Pregnant Count=8,
+ Total Women Teenager Count=215, 
+Total Female Who begun Child bearing=13, 
+Survey Round='2000',
+Country='Rwanda'
+
+butare - autre villes District:
+Pregnant Count=0,
+ Total Women Teenager Count=21, 
+Total Female Who begun Child bearing=1, 
+Survey Round='2000',
+Country='Rwanda'
+
+cyangugu District:
+Pregnant Count=6,
+ Total Women Teenager Count=212, 
+Total Female Who begun Child bearing=8, 
+Survey Round='2000',
+Country='Rwanda'
+
+gikongoro District:
+Pregnant Count=4,
+ Total Women Teenager Count=156, 
+Total Female Who begun Child bearing=8, 
+Survey Round='2000',
+Country='Rwanda'
+
+ruhengeri District:
+Pregnant Count=17,
+ Total Women Teenager Count=288, 
+Total Female Who begun Child bearing=36, 
+Survey Round='2000',
+Country='Rwanda'
+
+gisenyi District:
+Pregnant Count=9,
+ Total Women Teenager Count=278, 
+Total Female Who begun Child bearing=28, 
+Survey Round='2000',
+Country='Rwanda'
+
+kibuye District:
+Pregnant Count=2,
+ Total Women Teenager Count=113, 
+Total Female Who begun Child bearing=7, 
+Survey Round='2000',
+Country='Rwanda'
+
+gitarama District:
+Pregnant Count=0,
+ Total Women Teenager Count=254, 
+Total Female Who begun Child bearing=6, 
+Survey Round='2000',
+Country='Rwanda'
+
+byumba District:
+Pregnant Count=11,
+ Total Women Teenager Count=224, 
+Total Female Who begun Child bearing=18, 
+Survey Round='2000',
+Country='Rwanda'
+
+umutara District:
+Pregnant Count=2,
+ Total Women Teenager Count=81, 
+Total Female Who begun Child bearing=6, 
+Survey Round='2000',
+Country='Rwanda'
+
+butare District:
+Pregnant Count=3,
+ Total Women Teenager Count=215, 
+Total Female Who begun Child bearing=9, 
+Survey Round='2000',
+Country='Rwanda'
+
+The following are data for 2005 Survey round in each district: gitarama District:
+Pregnant Count=2,
+ Total Women Teenager Count=258, 
+Total Female Who begun Child bearing=11, 
+Survey Round='2005',
+Country='Rwanda'
+
+umutara District:
+Pregnant Count=2,
+ Total Women Teenager Count=106, 
+Total Female Who begun Child bearing=7, 
+Survey Round='2005',
+Country='Rwanda'
+
+kibuye District:
+Pregnant Count=1,
+ Total Women Teenager Count=155, 
+Total Female Who begun Child bearing=5, 
+Survey Round='2005',
+Country='Rwanda'
+
+ville de kigali District:
+Pregnant Count=2,
+ Total Women Teenager Count=226, 
+Total Female Who begun Child bearing=13, 
+Survey Round='2005',
+Country='Rwanda'
+
+kibungo District:
+Pregnant Count=0,
+ Total Women Teenager Count=262, 
+Total Female Who begun Child bearing=8, 
+Survey Round='2005',
+Country='Rwanda'
+
+gisenyi District:
+Pregnant Count=4,
+ Total Women Teenager Count=300, 
+Total Female Who begun Child bearing=12, 
+Survey Round='2005',
+Country='Rwanda'
+
+cyangugu District:
+Pregnant Count=1,
+ Total Women Teenager Count=202, 
+Total Female Who begun Child bearing=7, 
+Survey Round='2005',
+Country='Rwanda'
+
+kigali ngali District:
+Pregnant Count=3,
+ Total Women Teenager Count=225, 
+Total Female Who begun Child bearing=11, 
+Survey Round='2005',
+Country='Rwanda'
+
+byumba District:
+Pregnant Count=3,
+ Total Women Teenager Count=171, 
+Total Female Who begun Child bearing=5, 
+Survey Round='2005',
+Country='Rwanda'
+
+butare District:
+Pregnant Count=5,
+ Total Women Teenager Count=242, 
+Total Female Who begun Child bearing=6, 
+Survey Round='2005',
+Country='Rwanda'
+
+gikongoro District:
+Pregnant Count=3,
+ Total Women Teenager Count=147, 
+Total Female Who begun Child bearing=8, 
+Survey Round='2005',
+Country='Rwanda'
+
+ruhengeri District:
+Pregnant Count=1,
+ Total Women Teenager Count=291, 
+Total Female Who begun Child bearing=7, 
+Survey Round='2005',
+Country='Rwanda'
+
+The following are data for 2010-2011 Survey round in each district: huye District:
+Pregnant Count=2,
+ Total Women Teenager Count=74, 
+Total Female Who begun Child bearing=5, 
+Survey Round='2010-2011',
+Country='Rwanda'
+
+gatsibo District:
+Pregnant Count=0,
+ Total Women Teenager Count=140, 
+Total Female Who begun Child bearing=7, 
+Survey Round='2010-2011',
+Country='Rwanda'
+
+ngororero District:
+Pregnant Count=0,
+ Total Women Teenager Count=121, 
+Total Female Who begun Child bearing=6, 
+Survey Round='2010-2011',
+Country='Rwanda'
+
+kirehe District:
+Pregnant Count=3,
+ Total Women Teenager Count=90, 
+Total Female Who begun Child bearing=9, 
+Survey Round='2010-2011',
+Country='Rwanda'
+
+bugesera District:
+Pregnant Count=6,
+ Total Women Teenager Count=114, 
+Total Female Who begun Child bearing=13, 
+Survey Round='2010-2011',
+Country='Rwanda'
+
+kicukiro District:
+Pregnant Count=0,
+ Total Women Teenager Count=103, 
+Total Female Who begun Child bearing=3, 
+Survey Round='2010-2011',
+Country='Rwanda'
+
+gakenke District:
+Pregnant Count=2,
+ Total Women Teenager Count=101, 
+Total Female Who begun Child bearing=7, 
+Survey Round='2010-2011',
+Country='Rwanda'
+
+rulindo District:
+Pregnant Count=0,
+ Total Women Teenager Count=100, 
+Total Female Who begun Child bearing=4, 
+Survey Round='2010-2011',
+Country='Rwanda'
+
+rwamagana District:
+Pregnant Count=3,
+ Total Women Teenager Count=96, 
+Total Female Who begun Child bearing=6, 
+Survey Round='2010-2011',
+Country='Rwanda'
+
+kayonza District:
+Pregnant Count=0,
+ Total Women Teenager Count=97, 
+Total Female Who begun Child bearing=4, 
+Survey Round='2010-2011',
+Country='Rwanda'
+
+ruhango District:
+Pregnant Count=0,
+ Total Women Teenager Count=82, 
+Total Female Who begun Child bearing=2, 
+Survey Round='2010-2011',
+Country='Rwanda'
+
+karongi District:
+Pregnant Count=1,
+ Total Women Teenager Count=84, 
+Total Female Who begun Child bearing=3, 
+Survey Round='2010-2011',
+Country='Rwanda'
+
+nyabihu District:
+Pregnant Count=1,
+ Total Women Teenager Count=89, 
+Total Female Who begun Child bearing=4, 
+Survey Round='2010-2011',
+Country='Rwanda'
+
+nyanza District:
+Pregnant Count=1,
+ Total Women Teenager Count=73, 
+Total Female Who begun Child bearing=3, 
+Survey Round='2010-2011',
+Country='Rwanda'
+
+rubavu District:
+Pregnant Count=3,
+ Total Women Teenager Count=123, 
+Total Female Who begun Child bearing=12, 
+Survey Round='2010-2011',
+Country='Rwanda'
+
+burera District:
+Pregnant Count=2,
+ Total Women Teenager Count=82, 
+Total Female Who begun Child bearing=6, 
+Survey Round='2010-2011',
+Country='Rwanda'
+
+nyagatare District:
+Pregnant Count=2,
+ Total Women Teenager Count=91, 
+Total Female Who begun Child bearing=7, 
+Survey Round='2010-2011',
+Country='Rwanda'
+
+nyarugenge District:
+Pregnant Count=1,
+ Total Women Teenager Count=92, 
+Total Female Who begun Child bearing=7, 
+Survey Round='2010-2011',
+Country='Rwanda'
+
+gicumbi District:
+Pregnant Count=0,
+ Total Women Teenager Count=95, 
+Total Female Who begun Child bearing=1, 
+Survey Round='2010-2011',
+Country='Rwanda'
+
+ngoma District:
+Pregnant Count=3,
+ Total Women Teenager Count=80, 
+Total Female Who begun Child bearing=9, 
+Survey Round='2010-2011',
+Country='Rwanda'
+
+nyaruguru District:
+Pregnant Count=1,
+ Total Women Teenager Count=85, 
+Total Female Who begun Child bearing=3, 
+Survey Round='2010-2011',
+Country='Rwanda'
+
+muhanga District:
+Pregnant Count=2,
+ Total Women Teenager Count=66, 
+Total Female Who begun Child bearing=5, 
+Survey Round='2010-2011',
+Country='Rwanda'
+
+rutsiro District:
+Pregnant Count=1,
+ Total Women Teenager Count=99, 
+Total Female Who begun Child bearing=3, 
+Survey Round='2010-2011',
+Country='Rwanda'
+
+gasabo District:
+Pregnant Count=2,
+ Total Women Teenager Count=137, 
+Total Female Who begun Child bearing=11, 
+Survey Round='2010-2011',
+Country='Rwanda'
+
+nyamasheke District:
+Pregnant Count=1,
+ Total Women Teenager Count=140, 
+Total Female Who begun Child bearing=7, 
+Survey Round='2010-2011',
+Country='Rwanda'
+
+nyamagabe District:
+Pregnant Count=1,
+ Total Women Teenager Count=101, 
+Total Female Who begun Child bearing=4, 
+Survey Round='2010-2011',
+Country='Rwanda'
+
+gisagara District:
+Pregnant Count=1,
+ Total Women Teenager Count=83, 
+Total Female Who begun Child bearing=7, 
+Survey Round='2010-2011',
+Country='Rwanda'
+
+musanze District:
+Pregnant Count=1,
+ Total Women Teenager Count=125, 
+Total Female Who begun Child bearing=9, 
+Survey Round='2010-2011',
+Country='Rwanda'
+
+kamonyi District:
+Pregnant Count=1,
+ Total Women Teenager Count=78, 
+Total Female Who begun Child bearing=3, 
+Survey Round='2010-2011',
+Country='Rwanda'
+
+rusizi District:
+Pregnant Count=1,
+ Total Women Teenager Count=107, 
+Total Female Who begun Child bearing=7, 
+Survey Round='2010-2011',
+Country='Rwanda'
+
+The following are data for 2014-2015 Survey round in each district: huye District:
+Pregnant Count=1,
+ Total Women Teenager Count=87, 
+Total Female Who begun Child bearing=8, 
+Survey Round='2014-2015',
+Country='Rwanda'
+
+gatsibo District:
+Pregnant Count=6,
+ Total Women Teenager Count=126, 
+Total Female Who begun Child bearing=20, 
+Survey Round='2014-2015',
+Country='Rwanda'
+
+ngororero District:
+Pregnant Count=1,
+ Total Women Teenager Count=78, 
+Total Female Who begun Child bearing=5, 
+Survey Round='2014-2015',
+Country='Rwanda'
+
+kirehe District:
+Pregnant Count=0,
+ Total Women Teenager Count=52, 
+Total Female Who begun Child bearing=2, 
+Survey Round='2014-2015',
+Country='Rwanda'
+
+bugesera District:
+Pregnant Count=2,
+ Total Women Teenager Count=71, 
+Total Female Who begun Child bearing=6, 
+Survey Round='2014-2015',
+Country='Rwanda'
+
+kicukiro District:
+Pregnant Count=2,
+ Total Women Teenager Count=91, 
+Total Female Who begun Child bearing=6, 
+Survey Round='2014-2015',
+Country='Rwanda'
+
+gakenke District:
+Pregnant Count=1,
+ Total Women Teenager Count=83, 
+Total Female Who begun Child bearing=4, 
+Survey Round='2014-2015',
+Country='Rwanda'
+
+rulindo District:
+Pregnant Count=0,
+ Total Women Teenager Count=78, 
+Total Female Who begun Child bearing=2, 
+Survey Round='2014-2015',
+Country='Rwanda'
+
+rwamagana District:
+Pregnant Count=1,
+ Total Women Teenager Count=93, 
+Total Female Who begun Child bearing=10, 
+Survey Round='2014-2015',
+Country='Rwanda'
+
+kayonza District:
+Pregnant Count=1,
+ Total Women Teenager Count=81, 
+Total Female Who begun Child bearing=8, 
+Survey Round='2014-2015',
+Country='Rwanda'
+
+ruhango District:
+Pregnant Count=1,
+ Total Women Teenager Count=86, 
+Total Female Who begun Child bearing=7, 
+Survey Round='2014-2015',
+Country='Rwanda'
+
+karongi District:
+Pregnant Count=0,
+ Total Women Teenager Count=82, 
+Total Female Who begun Child bearing=5, 
+Survey Round='2014-2015',
+Country='Rwanda'
+
+nyabihu District:
+Pregnant Count=1,
+ Total Women Teenager Count=73, 
+Total Female Who begun Child bearing=5, 
+Survey Round='2014-2015',
+Country='Rwanda'
+
+nyanza District:
+Pregnant Count=3,
+ Total Women Teenager Count=64, 
+Total Female Who begun Child bearing=3, 
+Survey Round='2014-2015',
+Country='Rwanda'
+
+rubavu District:
+Pregnant Count=1,
+ Total Women Teenager Count=95, 
+Total Female Who begun Child bearing=5, 
+Survey Round='2014-2015',
+Country='Rwanda'
+
+burera District:
+Pregnant Count=3,
+ Total Women Teenager Count=118, 
+Total Female Who begun Child bearing=6, 
+Survey Round='2014-2015',
+Country='Rwanda'
+
+nyagatare District:
+Pregnant Count=2,
+ Total Women Teenager Count=113, 
+Total Female Who begun Child bearing=8, 
+Survey Round='2014-2015',
+Country='Rwanda'
+
+nyarugenge District:
+Pregnant Count=3,
+ Total Women Teenager Count=91, 
+Total Female Who begun Child bearing=8, 
+Survey Round='2014-2015',
+Country='Rwanda'
+
+gicumbi District:
+Pregnant Count=1,
+ Total Women Teenager Count=115, 
+Total Female Who begun Child bearing=3, 
+Survey Round='2014-2015',
+Country='Rwanda'
+
+ngoma District:
+Pregnant Count=4,
+ Total Women Teenager Count=93, 
+Total Female Who begun Child bearing=10, 
+Survey Round='2014-2015',
+Country='Rwanda'
+
+nyaruguru District:
+Pregnant Count=3,
+ Total Women Teenager Count=69, 
+Total Female Who begun Child bearing=5, 
+Survey Round='2014-2015',
+Country='Rwanda'
+
+muhanga District:
+Pregnant Count=0,
+ Total Women Teenager Count=77, 
+Total Female Who begun Child bearing=4, 
+Survey Round='2014-2015',
+Country='Rwanda'
+
+rutsiro District:
+Pregnant Count=0,
+ Total Women Teenager Count=60, 
+Total Female Who begun Child bearing=3, 
+Survey Round='2014-2015',
+Country='Rwanda'
+
+gasabo District:
+Pregnant Count=7,
+ Total Women Teenager Count=175, 
+Total Female Who begun Child bearing=20, 
+Survey Round='2014-2015',
+Country='Rwanda'
+
+nyamasheke District:
+Pregnant Count=1,
+ Total Women Teenager Count=71, 
+Total Female Who begun Child bearing=2, 
+Survey Round='2014-2015',
+Country='Rwanda'
+
+nyamagabe District:
+Pregnant Count=3,
+ Total Women Teenager Count=111, 
+Total Female Who begun Child bearing=4, 
+Survey Round='2014-2015',
+Country='Rwanda'
+
+gisagara District:
+Pregnant Count=1,
+ Total Women Teenager Count=83, 
+Total Female Who begun Child bearing=2, 
+Survey Round='2014-2015',
+Country='Rwanda'
+
+musanze District:
+Pregnant Count=1,
+ Total Women Teenager Count=131, 
+Total Female Who begun Child bearing=8, 
+Survey Round='2014-2015',
+Country='Rwanda'
+
+kamonyi District:
+Pregnant Count=0,
+ Total Women Teenager Count=88, 
+Total Female Who begun Child bearing=4, 
+Survey Round='2014-2015',
+Country='Rwanda'
+
+rusizi District:
+Pregnant Count=1,
+ Total Women Teenager Count=134, 
+Total Female Who begun Child bearing=9, 
+Survey Round='2014-2015',
+Country='Rwanda'
+
+The following are data for 2019-2020 Survey round in each district: gasabo District:
+Pregnant Count=9,
+ Total Women Teenager Count=194, 
+Total Female Who begun Child bearing=12, 
+Survey Round='2019-2020',
+Country='Rwanda'
+
+gisagara District:
+Pregnant Count=2,
+ Total Women Teenager Count=86, 
+Total Female Who begun Child bearing=5, 
+Survey Round='2019-2020',
+Country='Rwanda'
+
+gakenke District:
+Pregnant Count=0,
+ Total Women Teenager Count=98, 
+Total Female Who begun Child bearing=3, 
+Survey Round='2019-2020',
+Country='Rwanda'
+
+kayonza District:
+Pregnant Count=2,
+ Total Women Teenager Count=124, 
+Total Female Who begun Child bearing=11, 
+Survey Round='2019-2020',
+Country='Rwanda'
+
+gatsibo District:
+Pregnant Count=4,
+ Total Women Teenager Count=156, 
+Total Female Who begun Child bearing=14, 
+Survey Round='2019-2020',
+Country='Rwanda'
+
+rutsiro District:
+Pregnant Count=0,
+ Total Women Teenager Count=99, 
+Total Female Who begun Child bearing=2, 
+Survey Round='2019-2020',
+Country='Rwanda'
+
+karongi District:
+Pregnant Count=0,
+ Total Women Teenager Count=80, 
+Total Female Who begun Child bearing=0, 
+Survey Round='2019-2020',
+Country='Rwanda'
+
+muhanga District:
+Pregnant Count=3,
+ Total Women Teenager Count=72, 
+Total Female Who begun Child bearing=8, 
+Survey Round='2019-2020',
+Country='Rwanda'
+
+gicumbi District:
+Pregnant Count=1,
+ Total Women Teenager Count=98, 
+Total Female Who begun Child bearing=3, 
+Survey Round='2019-2020',
+Country='Rwanda'
+
+musanze District:
+Pregnant Count=3,
+ Total Women Teenager Count=123, 
+Total Female Who begun Child bearing=7, 
+Survey Round='2019-2020',
+Country='Rwanda'
+
+nyarugenge District:
+Pregnant Count=1,
+ Total Women Teenager Count=89, 
+Total Female Who begun Child bearing=5, 
+Survey Round='2019-2020',
+Country='Rwanda'
+
+nyamagabe District:
+Pregnant Count=1,
+ Total Women Teenager Count=84, 
+Total Female Who begun Child bearing=2, 
+Survey Round='2019-2020',
+Country='Rwanda'
+
+nyagatare District:
+Pregnant Count=1,
+ Total Women Teenager Count=165, 
+Total Female Who begun Child bearing=10, 
+Survey Round='2019-2020',
+Country='Rwanda'
+
+bugesera District:
+Pregnant Count=2,
+ Total Women Teenager Count=132, 
+Total Female Who begun Child bearing=7, 
+Survey Round='2019-2020',
+Country='Rwanda'
+
+nyabihu District:
+Pregnant Count=2,
+ Total Women Teenager Count=94, 
+Total Female Who begun Child bearing=5, 
+Survey Round='2019-2020',
+Country='Rwanda'
+
+nyanza District:
+Pregnant Count=2,
+ Total Women Teenager Count=98, 
+Total Female Who begun Child bearing=7, 
+Survey Round='2019-2020',
+Country='Rwanda'
+
+huye District:
+Pregnant Count=1,
+ Total Women Teenager Count=68, 
+Total Female Who begun Child bearing=4, 
+Survey Round='2019-2020',
+Country='Rwanda'
+
+ruhango District:
+Pregnant Count=1,
+ Total Women Teenager Count=84, 
+Total Female Who begun Child bearing=3, 
+Survey Round='2019-2020',
+Country='Rwanda'
+
+rusizi District:
+Pregnant Count=2,
+ Total Women Teenager Count=88, 
+Total Female Who begun Child bearing=4, 
+Survey Round='2019-2020',
+Country='Rwanda'
+
+ngororero District:
+Pregnant Count=1,
+ Total Women Teenager Count=93, 
+Total Female Who begun Child bearing=6, 
+Survey Round='2019-2020',
+Country='Rwanda'
+
+kicukiro District:
+Pregnant Count=1,
+ Total Women Teenager Count=114, 
+Total Female Who begun Child bearing=1, 
+Survey Round='2019-2020',
+Country='Rwanda'
+
+ngoma District:
+Pregnant Count=3,
+ Total Women Teenager Count=223, 
+Total Female Who begun Child bearing=7, 
+Survey Round='2019-2020',
+Country='Rwanda'
+
+rubavu District:
+Pregnant Count=2,
+ Total Women Teenager Count=149, 
+Total Female Who begun Child bearing=8, 
+Survey Round='2019-2020',
+Country='Rwanda'
+
+burera District:
+Pregnant Count=1,
+ Total Women Teenager Count=104, 
+Total Female Who begun Child bearing=1, 
+Survey Round='2019-2020',
+Country='Rwanda'
+
+rwamagana District:
+Pregnant Count=0,
+ Total Women Teenager Count=84, 
+Total Female Who begun Child bearing=7, 
+Survey Round='2019-2020',
+Country='Rwanda'
+
+kirehe District:
+Pregnant Count=1,
+ Total Women Teenager Count=105, 
+Total Female Who begun Child bearing=7, 
+Survey Round='2019-2020',
+Country='Rwanda'
+
+kamonyi District:
+Pregnant Count=1,
+ Total Women Teenager Count=111, 
+Total Female Who begun Child bearing=5, 
+Survey Round='2019-2020',
+Country='Rwanda'
+
+nyaruguru District:
+Pregnant Count=2,
+ Total Women Teenager Count=79, 
+Total Female Who begun Child bearing=3, 
+Survey Round='2019-2020',
+Country='Rwanda'
+
+nyamasheke District:
+Pregnant Count=0,
+ Total Women Teenager Count=91, 
+Total Female Who begun Child bearing=2, 
+Survey Round='2019-2020',
+Country='Rwanda'
+
+rulindo District:
+Pregnant Count=1,
+ Total Women Teenager Count=75, 
+Total Female Who begun Child bearing=7, 
+Survey Round='2019-2020',
+Country='Rwanda'
+
+The following are data for 2022 Survey round in each district: mombasa: District:
+Pregnant Count=4,
+ Total Women Teenager Count=143, 
+Total Female Who begun Child bearing=12, 
+Survey Round='2022',
+Country='Kenya'
+
+kwale: District:
+Pregnant Count=4,
+ Total Women Teenager Count=118, 
+Total Female Who begun Child bearing=16, 
+Survey Round='2022',
+Country='Kenya'
+
+kilifi: District:
+Pregnant Count=8,
+ Total Women Teenager Count=224, 
+Total Female Who begun Child bearing=28, 
+Survey Round='2022',
+Country='Kenya'
+
+tana river: District:
+Pregnant Count=1,
+ Total Women Teenager Count=27, 
+Total Female Who begun Child bearing=4, 
+Survey Round='2022',
+Country='Kenya'
+
+lamu: District:
+Pregnant Count=0,
+ Total Women Teenager Count=24, 
+Total Female Who begun Child bearing=3, 
+Survey Round='2022',
+Country='Kenya'
+
+taita taveta: District:
+Pregnant Count=1,
+ Total Women Teenager Count=30, 
+Total Female Who begun Child bearing=6, 
+Survey Round='2022',
+Country='Kenya'
+
+garissa: District:
+Pregnant Count=4,
+ Total Women Teenager Count=85, 
+Total Female Who begun Child bearing=12, 
+Survey Round='2022',
+Country='Kenya'
+
+wajir: District:
+Pregnant Count=3,
+ Total Women Teenager Count=45, 
+Total Female Who begun Child bearing=5, 
+Survey Round='2022',
+Country='Kenya'
+
+mandera: District:
+Pregnant Count=1,
+ Total Women Teenager Count=49, 
+Total Female Who begun Child bearing=7, 
+Survey Round='2022',
+Country='Kenya'
+
+marsabit: District:
+Pregnant Count=2,
+ Total Women Teenager Count=20, 
+Total Female Who begun Child bearing=6, 
+Survey Round='2022',
+Country='Kenya'
+
+isiolo: District:
+Pregnant Count=1,
+ Total Women Teenager Count=27, 
+Total Female Who begun Child bearing=4, 
+Survey Round='2022',
+Country='Kenya'
+
+meru: District:
+Pregnant Count=16,
+ Total Women Teenager Count=206, 
+Total Female Who begun Child bearing=49, 
+Survey Round='2022',
+Country='Kenya'
+
+tharakanithi: District:
+Pregnant Count=0,
+ Total Women Teenager Count=39, 
+Total Female Who begun Child bearing=4, 
+Survey Round='2022',
+Country='Kenya'
+
+embu: District:
+Pregnant Count=2,
+ Total Women Teenager Count=49, 
+Total Female Who begun Child bearing=7, 
+Survey Round='2022',
+Country='Kenya'
+
+kitui: District:
+Pregnant Count=0,
+ Total Women Teenager Count=142, 
+Total Female Who begun Child bearing=13, 
+Survey Round='2022',
+Country='Kenya'
+
+machakos: District:
+Pregnant Count=3,
+ Total Women Teenager Count=178, 
+Total Female Who begun Child bearing=20, 
+Survey Round='2022',
+Country='Kenya'
+
+makueni: District:
+Pregnant Count=4,
+ Total Women Teenager Count=151, 
+Total Female Who begun Child bearing=17, 
+Survey Round='2022',
+Country='Kenya'
+
+nyandarua: District:
+Pregnant Count=1,
+ Total Women Teenager Count=93, 
+Total Female Who begun Child bearing=5, 
+Survey Round='2022',
+Country='Kenya'
+
+nyeri: District:
+Pregnant Count=0,
+ Total Women Teenager Count=74, 
+Total Female Who begun Child bearing=3, 
+Survey Round='2022',
+Country='Kenya'
+
+kirinyaga: District:
+Pregnant Count=0,
+ Total Women Teenager Count=64, 
+Total Female Who begun Child bearing=5, 
+Survey Round='2022',
+Country='Kenya'
+
+murang'a: District:
+Pregnant Count=5,
+ Total Women Teenager Count=139, 
+Total Female Who begun Child bearing=10, 
+Survey Round='2022',
+Country='Kenya'
+
+kiambu: District:
+Pregnant Count=10,
+ Total Women Teenager Count=267, 
+Total Female Who begun Child bearing=32, 
+Survey Round='2022',
+Country='Kenya'
+
+turkana: District:
+Pregnant Count=2,
+ Total Women Teenager Count=56, 
+Total Female Who begun Child bearing=10, 
+Survey Round='2022',
+Country='Kenya'
+
+west pokot: District:
+Pregnant Count=5,
+ Total Women Teenager Count=82, 
+Total Female Who begun Child bearing=29, 
+Survey Round='2022',
+Country='Kenya'
+
+samburu: District:
+Pregnant Count=2,
+ Total Women Teenager Count=28, 
+Total Female Who begun Child bearing=13, 
+Survey Round='2022',
+Country='Kenya'
+
+trans nzoia: District:
+Pregnant Count=4,
+ Total Women Teenager Count=146, 
+Total Female Who begun Child bearing=23, 
+Survey Round='2022',
+Country='Kenya'
+
+uasin gishu: District:
+Pregnant Count=8,
+ Total Women Teenager Count=158, 
+Total Female Who begun Child bearing=16, 
+Survey Round='2022',
+Country='Kenya'
+
+elgeyomarakwet: District:
+Pregnant Count=1,
+ Total Women Teenager Count=32, 
+Total Female Who begun Child bearing=4, 
+Survey Round='2022',
+Country='Kenya'
+
+nandi: District:
+Pregnant Count=0,
+ Total Women Teenager Count=118, 
+Total Female Who begun Child bearing=10, 
+Survey Round='2022',
+Country='Kenya'
+
+baringo: District:
+Pregnant Count=5,
+ Total Women Teenager Count=86, 
+Total Female Who begun Child bearing=17, 
+Survey Round='2022',
+Country='Kenya'
+
+laikipia: District:
+Pregnant Count=1,
+ Total Women Teenager Count=69, 
+Total Female Who begun Child bearing=6, 
+Survey Round='2022',
+Country='Kenya'
+
+nakuru: District:
+Pregnant Count=10,
+ Total Women Teenager Count=283, 
+Total Female Who begun Child bearing=47, 
+Survey Round='2022',
+Country='Kenya'
+
+narok: District:
+Pregnant Count=5,
+ Total Women Teenager Count=176, 
+Total Female Who begun Child bearing=47, 
+Survey Round='2022',
+Country='Kenya'
+
+kajiado: District:
+Pregnant Count=3,
+ Total Women Teenager Count=97, 
+Total Female Who begun Child bearing=21, 
+Survey Round='2022',
+Country='Kenya'
+
+kericho: District:
+Pregnant Count=0,
+ Total Women Teenager Count=135, 
+Total Female Who begun Child bearing=20, 
+Survey Round='2022',
+Country='Kenya'
+
+bomet: District:
+Pregnant Count=2,
+ Total Women Teenager Count=152, 
+Total Female Who begun Child bearing=13, 
+Survey Round='2022',
+Country='Kenya'
+
+kakamega: District:
+Pregnant Count=9,
+ Total Women Teenager Count=328, 
+Total Female Who begun Child bearing=47, 
+Survey Round='2022',
+Country='Kenya'
+
+vihiga: District:
+Pregnant Count=5,
+ Total Women Teenager Count=113, 
+Total Female Who begun Child bearing=8, 
+Survey Round='2022',
+Country='Kenya'
+
+bungoma: District:
+Pregnant Count=12,
+ Total Women Teenager Count=294, 
+Total Female Who begun Child bearing=52, 
+Survey Round='2022',
+Country='Kenya'
+
+busia: District:
+Pregnant Count=4,
+ Total Women Teenager Count=149, 
+Total Female Who begun Child bearing=22, 
+Survey Round='2022',
+Country='Kenya'
+
+siaya: District:
+Pregnant Count=4,
+ Total Women Teenager Count=130, 
+Total Female Who begun Child bearing=25, 
+Survey Round='2022',
+Country='Kenya'
+
+kisumu: District:
+Pregnant Count=6,
+ Total Women Teenager Count=157, 
+Total Female Who begun Child bearing=16, 
+Survey Round='2022',
+Country='Kenya'
+
+homa bay: District:
+Pregnant Count=5,
+ Total Women Teenager Count=159, 
+Total Female Who begun Child bearing=30, 
+Survey Round='2022',
+Country='Kenya'
+
+migori: District:
+Pregnant Count=6,
+ Total Women Teenager Count=159, 
+Total Female Who begun Child bearing=33, 
+Survey Round='2022',
+Country='Kenya'
+
+kisii: District:
+Pregnant Count=3,
+ Total Women Teenager Count=192, 
+Total Female Who begun Child bearing=26, 
+Survey Round='2022',
+Country='Kenya'
+
+nyamira: District:
+Pregnant Count=1,
+ Total Women Teenager Count=81, 
+Total Female Who begun Child bearing=13, 
+Survey Round='2022',
+Country='Kenya'
+
+nairobi: District:
+Pregnant Count=2,
+ Total Women Teenager Count=452, 
+Total Female Who begun Child bearing=38, 
+Survey Round='2022',
+Country='Kenya'
+
+
+The following are summary list of data where country is rwanda, for each survey round:
+ Survey:
+Percentage Pregnant=2%, 
+Total Women Teenager Count=15637, 
+Percentage Who begun Child bearing=6%'
+
+
+The following are summary list of data where country is kenya, for each survey round:
+ Survey:
+Percentage Pregnant=3%, 
+Total Women Teenager Count=6025, 
+Percentage Who begun Child bearing=14%'
+

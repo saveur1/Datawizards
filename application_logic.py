@@ -323,23 +323,21 @@ def get_districts_string(records: List, survey_name: str):
 
     for record in records:
         # Stringify record
-        output += (f"{record["district"]} District(Pregnant Count={int(round(record["pregnant_count"], 0))}, "
-                   f"Total Women Teenager Count={int(round(record["women_count"], 0))}, Total Female Who begun Child bearing={ int(round(record["child_bearing"], 0))}, "
-                   f"Survey Round='{record["survey_round"]}')")
+        output += (f"{record["district"]} District:\nPregnant Count={int(round(record["pregnant_count"], 0))},\n "
+                   f"Total Women Teenager Count={int(round(record["women_count"], 0))}, \nTotal Female Who begun Child bearing={ int(round(record["child_bearing"], 0))}, \n"
+                   f"Survey Round='{record["survey_round"]}',\nCountry='{record["country"]}'\n\n")
     
     return output
 
 def get_country_string(records: List, country: str):
-    output = f'''
-                The following are summary list of data where country is { country }, for each survey round:
-            '''
+    output = f"\nThe following are summary list of data where country is { country }, for each survey round:"
 
     for record in records:
         # Stringify record
         child_bearing_percentage = ( record["child_bearing"]/ (record["women_count"] or 1) ) * 100
         pregnant_percentage = ( record["pregnant_count"]/ (record["women_count"] or 1) ) * 100
         
-        output += (f"{record["survey_round"]} Survey(Percentage Pregnant={int(round(pregnant_percentage, 0))}%, "
-                   f"Total Women Teenager Count={int(round(record["women_count"], 0))}, Percentage Who begun Child bearing={ int(round(child_bearing_percentage, 0))}%')")
+        output += (f"\n{record["survey_round"]} Survey:\nPercentage Pregnant={int(round(pregnant_percentage, 0))}%, \n"
+                   f"Total Women Teenager Count={int(round(record["women_count"], 0))}, \nPercentage Who begun Child bearing={ int(round(child_bearing_percentage, 0))}%'\n\n")
     
     return output

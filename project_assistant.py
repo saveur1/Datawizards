@@ -38,10 +38,15 @@ def update_text_docs():
     db_records = datas.get_table_data()
 
     string_data = """
-        A Streamlit dashboard visualizing teenage pregnancy trends in Rwanda for teenager ranging from 15 to 19, 
-        based on data from the Rwanda Demographic and Health Surveys conducted in 2010-2011, 2014-2015, and 2019-2020.
-        This dashboard provides an overview of the data from these years, Note that: datasets are from NISR website and DHS Program website.
-        illustrating changes in teenage pregnancy rates over time.
+    A Streamlit dashboard visualizing teenage pregnancy trends in Rwanda for teenager ranging from 15 to 19, 
+    based on data from the Rwanda Demographic and Health Surveys conducted in 2010-2011, 2014-2015, and 2019-2020.
+    This dashboard provides an overview of the data from these years, Note that: datasets are from NISR website and DHS Program website.
+    illustrating changes in teenage pregnancy rates over time.
+    
+    Terms and explanations:
+    hello, hi, hey, greetings, what's u, howdy: These are greetings, response is "I'm ready to answer your questions. Do you have any questions about the teenage pregnancy data I have access to?"
+    bye, goodbye, see you, take care: these are words user use to indicate that they are about to close chat, respnse is "Goodbye! Let me know if you need help with anything else."
+    Survey rounds in Rwanda: take period of five years between each.
     """
     string_district = ""
 
