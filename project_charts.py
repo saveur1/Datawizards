@@ -287,7 +287,7 @@ def age_group_chart():
     for age, group in age_groups.items():
         total_in_group = len(group)  # Total women in this specific age group
         currently_pregnant = sum(record["weights"] for record in group if record["living_current_pregnancy"] >= 1)  # Pregnant women in this age group
-        percentage_pregnant = (currently_pregnant / total_in_group * 100) if total_in_group > 0 else 0  # Percentage for this age group
+        percentage_pregnant = round((currently_pregnant / total_in_group * 100)) if total_in_group > 0 else 0  # Percentage for this age group
 
         # Populate the data
         age_data["Age Group"].append(age)
