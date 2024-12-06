@@ -269,7 +269,7 @@ def wealth_quantile_chart():
 
 def age_group_chart():
     st.info(
-        "This graph displays the percentage of young women aged 15-19 who have started childbearing. It includes those who have had one or more children and those currently experiencing their first pregnancy. The percentages vary by age group, reflecting trends based on the selected data filters."
+        "This graph shows the percentage of young women aged 15-19 who have begun childbearing, including those with children or pregnant for the first time. Percentages vary by age group based on data filters"
     )
     # Retrieve filtered records and survey year
     records = st.session_state.filtered_records  # Example: [{'current_age': 25, 'living_current_pregnancy': 1}, ...]
@@ -345,7 +345,7 @@ def age_group_chart():
     st.plotly_chart(fig, use_container_width=True, key="age_group")
 def province_chart():
     st.info(
-        "This graph displays the percentage of young women aged 15-19 who have started childbearing. It includes those who have had one or more children and those currently experiencing their first pregnancy. The percentages vary by province, reflecting trends based on the selected data filters."
+        "This graph shows the percentage of young women aged 15-19 who have started childbearing, including those with children or pregnant for the first time. Percentages vary by province based on data filters"
     )
     # Retrieve filtered records and survey year
     records = st.session_state.filtered_records  # Example: [{'province': 'Kigali', 'living_current_pregnancy': 1}, ...]
