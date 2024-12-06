@@ -428,3 +428,43 @@ def districts_pregancy_barchat():
         bargroupgap=0.1 # gap between bars of the same location coordinate.
     )
     st.plotly_chart(fig, use_container_width=True)
+
+
+def countries_comparing_map(records):
+        summary = app_logic.create_upload_summary(records, "country")
+        all_rwanda = 'All Rwanda'
+        Urban = 'Urban'
+        Rular = 'Rular'
+
+        # Convert 'Year' column to integer
+        data1['Year'] = data1['Year'].astype(int)
+
+        # Create a date column combining 'Year' and 'Month'
+        df['Date'] = pd.to_datetime(data1['Year'].astype(str) + '-' + data1['Month'].astype(str), format='%Y-%m')
+
+        # Create a one-year range from the selected month and year
+        end_date = datetime(int(selected_year), int(selected_month), 1)
+        start_date = end_date - timedelta(days=365)
+        filtered_df = df[(df['Date'] >= start_date) & (df['Date'] <= end_date)]
+
+        # Create the first line chart comparing Imported Goods and Local Goods
+        fig2 = go.Figure()
+        fig2.add_trace(go.Scatter(x=filtered_df['Date'], y=filtered_df[all_rwanda],
+                                mode='lines+markers', name='All Rwanda', line=dict(color='green', width=3), marker=dict(size=8)))
+
+        fig2.add_trace(go.Scatter(x=filtered_df['Date'], y=filtered_df[Urban],
+                                mode='lines+markers', name='Urban', line=dict(color='orange', width=3), marker=dict(size=8)))
+
+        fig2.add_trace(go.Scatter(x=filtered_df['Date'], 
+                                y=filtered_df[Rular],
+                                mode='lines+markers', name='Rural',
+                                line=dict(color='purple', width=3), marker=dict(size=6)))
+
+        # Update layout for the second chart
+        fig2.update_layout(title=f"Teenegers Child bearing comparison among countries",
+                        xaxis_title='Year-Month',
+                        yaxis_title='CPI Index',
+                        legend=dict(x=0, y=1.1, traceorder='normal'))
+
+        # Organize the charts into two columns
+        st.plotly_chart(fig2,use_container_width=True)

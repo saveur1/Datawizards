@@ -6,6 +6,7 @@ import application_logic as appl
 import project_charts as pcharts
 from streamlit_theme import st_theme
 import project_assistant as assistant
+import pandas as pd
 
 st.set_page_config(page_title="Teenage pregnacy prediction",layout="wide",page_icon="🌍")
 st.markdown("<style>div.block-container{padding-top:0em;}</style>", unsafe_allow_html=True)
@@ -64,11 +65,12 @@ def main():
             try:
                 if file_extension in ['xls', 'xlsx']:
                 # Process Excel file
-                    datas.upload_xlsx_file(uploaded_file)
+                    data_frame = pd.read_excel(uploaded_file)
+                    datas.upload_xlsx_file(uploaded_file, data_frame)
                     
                 elif file_extension == 'csv':
-                # Process CSV file
-                    datas.upload_csv_file(uploaded_file)
+                    data_frame = pd.read_csv(uploaded_file)
+                    datas.upload_xlsx_file(uploaded_file, data_frame)
                     
                 elif file_extension == 'dta':
                 # Process CSV file

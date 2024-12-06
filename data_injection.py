@@ -231,7 +231,7 @@ def filter_incoming_data(records: List):
 
 # UPLOADED FILE PREVIEW MODAL
 @st.dialog("Review Uploaded File", width="large")
-def upload_xlsx_file(xlsx_file):
+def upload_xlsx_file(xlsx_file, data_frame: type[pd.DataFrame]):
     if xlsx_file is not None:
         columns_map = {
                 'v007' : "interview_year",
@@ -247,7 +247,6 @@ def upload_xlsx_file(xlsx_file):
                 'v190' : "wealth_quintile",
         }
         # data table
-        data_frame = pd.read_excel(xlsx_file)
         data_frame = data_frame.rename(columns=lambda col: str(col).strip().lower())
         
         # Validate required columns
