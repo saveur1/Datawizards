@@ -3,11 +3,14 @@
     based on data from the Rwanda Demographic and Health Surveys conducted in 2010-2011, 2014-2015, and 2019-2020.
     This dashboard provides an overview of the data from these years, Note that: datasets are from NISR website and DHS Program website.
     illustrating changes in teenage pregnancy rates over time.
+    
     Terms and explanations:
-    hello, hi, hey, greetings, what's u, howdy: These are greetings, Answer for these is "I'm ready to answer your questions. Do you have any questions about the teenage pregnancy data I have access to?"
-    bye, goodbye, see you, take care: these are words user use to indicate that they are about to close chat and AI should respond like "Goodbye! Let me know if you need help with anything else."
+    hello, hi, hey, greetings, what's u, howdy: These are greetings, response is "I'm ready to answer your questions. Do you have any questions about the teenage pregnancy data I have access to?"
+    bye, goodbye, see you, take care: these are words user use to indicate that they are about to close chat, respnse is "Goodbye! Let me know if you need help with anything else."
     Survey rounds in Rwanda: take period of five years between each.
-    The following are data for 1992 Survey round in each district: rural District:
+    The following are data for 1992 Survey round in each district: 
+
+rural District:
 Pregnant Count=35,
  Total Women Teenager Count=1369, 
 Total Female Who begun Child bearing=138, 
@@ -21,7 +24,9 @@ Total Female Who begun Child bearing=9,
 Survey Round='1992',
 Country='Rwanda'
 
-The following are data for 2000 Survey round in each district: kigali ville (pvk) District:
+The following are data for 2000 Survey round in each district: 
+
+kigali ville (pvk) District:
 Pregnant Count=4,
  Total Women Teenager Count=189, 
 Total Female Who begun Child bearing=13, 
@@ -112,7 +117,9 @@ Total Female Who begun Child bearing=9,
 Survey Round='2000',
 Country='Rwanda'
 
-The following are data for 2005 Survey round in each district: gitarama District:
+The following are data for 2005 Survey round in each district: 
+
+gitarama District:
 Pregnant Count=2,
  Total Women Teenager Count=258, 
 Total Female Who begun Child bearing=11, 
@@ -196,7 +203,9 @@ Total Female Who begun Child bearing=7,
 Survey Round='2005',
 Country='Rwanda'
 
-The following are data for 2010-2011 Survey round in each district: huye District:
+The following are data for 2010-2011 Survey round in each district: 
+
+huye District:
 Pregnant Count=2,
  Total Women Teenager Count=74, 
 Total Female Who begun Child bearing=5, 
@@ -406,7 +415,9 @@ Total Female Who begun Child bearing=7,
 Survey Round='2010-2011',
 Country='Rwanda'
 
-The following are data for 2014-2015 Survey round in each district: huye District:
+The following are data for 2014-2015 Survey round in each district: 
+
+huye District:
 Pregnant Count=1,
  Total Women Teenager Count=87, 
 Total Female Who begun Child bearing=8, 
@@ -616,7 +627,9 @@ Total Female Who begun Child bearing=9,
 Survey Round='2014-2015',
 Country='Rwanda'
 
-The following are data for 2019-2020 Survey round in each district: gasabo District:
+The following are data for 2019-2020 Survey round in each district: 
+
+gasabo District:
 Pregnant Count=9,
  Total Women Teenager Count=194, 
 Total Female Who begun Child bearing=12, 
@@ -826,7 +839,9 @@ Total Female Who begun Child bearing=7,
 Survey Round='2019-2020',
 Country='Rwanda'
 
-The following are data for 2022 Survey round in each district: mombasa: District:
+The following are data for 2022 Survey round in each district: 
+
+mombasa: District:
 Pregnant Count=4,
  Total Women Teenager Count=143, 
 Total Female Who begun Child bearing=12, 
@@ -1156,15 +1171,43 @@ Survey Round='2022',
 Country='Kenya'
 
 
-The following are summary list of data where country is rwanda, for each survey round:
- Survey:
+The following are summary list of data where country is rwanda, for 1992  survey round:
+Percentage Pregnant=3%, 
+Total Women Teenager Count=1464, 
+Percentage Who begun Child bearing=10%'
+
+
+The following are summary list of data where country is rwanda, for 2000  survey round:
+Percentage Pregnant=3%, 
+Total Women Teenager Count=2617, 
+Percentage Who begun Child bearing=7%'
+
+
+The following are summary list of data where country is rwanda, for 2005  survey round:
+Percentage Pregnant=1%, 
+Total Women Teenager Count=2585, 
+Percentage Who begun Child bearing=4%'
+
+
+The following are summary list of data where country is rwanda, for 2010-2011  survey round:
 Percentage Pregnant=2%, 
-Total Women Teenager Count=15637, 
+Total Women Teenager Count=2945, 
 Percentage Who begun Child bearing=6%'
 
 
-The following are summary list of data where country is kenya, for each survey round:
- Survey:
+The following are summary list of data where country is rwanda, for 2014-2015  survey round:
+Percentage Pregnant=2%, 
+Total Women Teenager Count=2768, 
+Percentage Who begun Child bearing=7%'
+
+
+The following are summary list of data where country is rwanda, for 2019-2020  survey round:
+Percentage Pregnant=2%, 
+Total Women Teenager Count=3258, 
+Percentage Who begun Child bearing=5%'
+
+
+The following are summary list of data where country is kenya, for 2022  survey round:
 Percentage Pregnant=3%, 
 Total Women Teenager Count=6025, 
 Percentage Who begun Child bearing=14%'

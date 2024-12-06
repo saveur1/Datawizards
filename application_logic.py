@@ -319,7 +319,7 @@ def calculate_preg_percentages(pregnancy_records, women_records):
     return percentage
 
 def get_districts_string(records: List, survey_name: str):
-    output = f"The following are data for { survey_name } Survey round in each district: "
+    output = f"The following are data for { survey_name } Survey round in each district: \n\n"
 
     for record in records:
         # Stringify record
@@ -329,15 +329,15 @@ def get_districts_string(records: List, survey_name: str):
     
     return output
 
-def get_country_string(records: List, country: str):
-    output = f"\nThe following are summary list of data where country is { country }, for each survey round:"
+def get_country_string(records: List, country: str, survey: str):
+    output = f"\nThe following are summary list of data where country is { country }, for { survey }  survey round:"
 
     for record in records:
         # Stringify record
         child_bearing_percentage = ( record["child_bearing"]/ (record["women_count"] or 1) ) * 100
         pregnant_percentage = ( record["pregnant_count"]/ (record["women_count"] or 1) ) * 100
         
-        output += (f"\n{record["survey_round"]} Survey:\nPercentage Pregnant={int(round(pregnant_percentage, 0))}%, \n"
+        output += (f"\nPercentage Pregnant={int(round(pregnant_percentage, 0))}%, \n"
                    f"Total Women Teenager Count={int(round(record["women_count"], 0))}, \nPercentage Who begun Child bearing={ int(round(child_bearing_percentage, 0))}%'\n\n")
     
     return output

@@ -60,9 +60,13 @@ def update_text_docs():
     string_country = ""
 
     country_grouping = app_logic.records_grouped_by(db_records, "country")
-    for country, records in country_grouping.items():    
-        grouped_countries = app_logic.create_upload_summary(records, "country")
-        string_country += app_logic.get_country_string(grouped_countries, country)
+    
+    for country, records in country_grouping.items():          
+        grouped_countries = app_logic.records_grouped_by(records, "survey_round")
+        
+        for survey, survey_records in grouped_countries.items():
+            surveys_countries = app_logic.create_upload_summary(survey_records, "survey_round")
+            string_country += app_logic.get_country_string(surveys_countries, country, survey)
 
     string_data += string_district + string_country
     with open(DATA_PATH + "/pregnancy_summary.txt", "w") as file:

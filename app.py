@@ -128,7 +128,7 @@ def main():
     with cols8:
         pcharts.province_chart()
 
-    assistant.main()
+    # assistant.main()
     st.button("Ask AI", icon="💬", key="ai_chart_button", type="primary", on_click= assistant.chat_with_assistant, help="Click to chat with datawizard assistant.")
 
 
