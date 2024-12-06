@@ -6,17 +6,19 @@ The dashboard provides an overview of teenage pregnancy trends over time, highli
 
 District boundaries are visualized using GeoJSON data, ensuring precise geographic representation of trends across Rwanda.
 
-## Features  
+## Features
 
-- **Trend Visualization**: See changes in teenage pregnancy rates across the Rwanda Demographic and Health Survey periods of 1992, 2000, 2005, 2010-2011, 2014-2015, and 2019-2020.  
-- **Comparative Analysis**: Gain insights into how teenage pregnancy rates have evolved across the survey periods, highlighting key patterns and trends.  
-- **Interactive Filtering**: Adjust filters to focus on specific demographics, such as age groups, or geographic regions for detailed insights.  
-- **Map Visualization**: Provides an interactive map to visualize district-wise teenage pregnancy rates and regional variations, powered by GeoJSON data for precise boundary mapping.  
-- **AI Assistant**: Leverage our built-in AI assistant to:  
-  - Provide quick summaries of the data.  
-  - Answer user-specific questions about trends and statistics.  
-  - Offer recommendations based on comparative analyses.  
-  - Help navigate and interpret the dashboard’s features more effectively. 
+- **Trend Visualization**: See changes in teenage pregnancy rates across the Rwanda Demographic and Health Survey periods of 1992, 2000, 2005, 2010-2011, 2014-2015, and 2019-2020.
+- **Comparative Analysis**: Gain insights into how teenage pregnancy rates have evolved across the survey periods, highlighting key patterns and trends.
+- **Interactive Filtering**: Adjust filters to focus on specific demographics, such as age groups, or geographic regions for detailed insights.
+- **Map Visualization**: Provides an interactive map to visualize district-wise teenage pregnancy rates and regional variations, powered by GeoJSON data for precise boundary mapping.
+- **AI Assistant**: Leverage our built-in AI assistant to:
+  - Provide quick summaries of the data.
+  - Answer user-specific questions about trends and statistics.
+  - Offer recommendations based on comparative analyses.
+  - Help navigate and interpret the dashboard’s features more effectively.
+- **Excel Template**: Easily upload data using our pre-formatted Excel template, ensuring consistency and simplifying the data input process.  
+  - Download the template from [here](./template/file.xlsx).  
 
 ## Live Demo
 
@@ -114,11 +116,6 @@ Follow these steps to export the data from **Stata** into a CSV file using the G
 1. Navigate to the "Upload Data" section in the Streamlit dashboard.
 2. Use the file upload interface to select the CSV file generated from Stata.
 3. Confirm the upload to visualize and process the data within the system.
-
- **Data Cleaning**
-
-- Removed incomplete or inconsistent records, such as missing age or pregnancy data.
-- Harmonized variables across survey years to ensure compatibility, e.g., standardizing district names.
 
 ## License
 
