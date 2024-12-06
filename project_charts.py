@@ -250,7 +250,7 @@ def wealth_quantile_chart():
         height=300,
         margin=dict(t=60, b=50, l=0, r=30),
         xaxis=dict(
-            title="Percentage of Women Currently Pregnant",
+            title="Percentage of Women",
             showgrid=False,
             zeroline=False
         ),
@@ -267,6 +267,83 @@ def wealth_quantile_chart():
 
     # Display the plot in Streamlit
     st.plotly_chart(fig, use_container_width=True, key="wealthQ")
+
+def age_group_chart():
+    st.info(
+        "This graph displays the percentage of young women aged 15-19 who have started childbearing. It includes those who have had one or more children and those currently experiencing their first pregnancy. The percentages vary by age group, reflecting trends based on the selected data filters."
+    )
+    # Retrieve filtered records and survey year
+    records = st.session_state.filtered_records  # Example: [{'current_age': 25, 'living_current_pregnancy': 1}, ...]
+    
+    # Group records by current age
+    age_groups = defaultdict(list)
+    for record in records:
+        age_groups[record["current_age"]].append(record)
+
+    # Calculate statistics for each age group
+    age_data = defaultdict(list)
+    for age, group in age_groups.items():
+        total_in_group = len(group)  # Total women in this specific age group
+        currently_pregnant = sum(record["weights"] for record in group if record["living_current_pregnancy"] >= 1)  # Pregnant women in this age group
+        percentage_pregnant = (currently_pregnant / total_in_group * 100) if total_in_group > 0 else 0  # Percentage for this age group
+
+        # Populate the data
+        age_data["Age Group"].append(age)
+        age_data["Total Women"].append(total_in_group)
+        age_data["Pregnant Women"].append(currently_pregnant)
+        age_data["Percentage Pregnant"].append(percentage_pregnant)
+
+    # Create the DataFrame
+    default_data = {
+        "Age Group": [],
+        "Total Women": [],
+        "Pregnant Women": [],
+        "Percentage Pregnant": []
+    }
+
+    df_age = pd.DataFrame(dict(age_data) or default_data)
+    df_age = df_age.sort_values(by="Percentage Pregnant", ascending=True)
+
+    # Create the bar chart using Plotly
+    fig = go.Figure()
+
+    fig.add_trace(go.Bar(
+        x=df_age["Percentage Pregnant"],
+        y=df_age["Age Group"],
+        text=[f'{x:.2f}%' for x in df_age["Percentage Pregnant"]],
+        textposition='inside',
+        orientation='h',
+        marker_color='#005cab',
+        hovertemplate='%{y}: %{x:.2f}%<extra></extra>'
+    ))
+
+    # Update layout
+    fig.update_layout(
+        title=dict(
+            text=f"<i>Pregnancy Rates by Age Group</i>", 
+            x=0.5, 
+            xanchor="center"
+        ),
+        height=300,
+        margin=dict(t=60, b=50, l=0, r=30),
+        xaxis=dict(
+            title="Percentage of Women",
+            showgrid=False,
+            zeroline=False
+        ),
+        yaxis=dict(
+            title="Age Group",
+            tickmode='array',
+            ticktext=df_age["Age Group"],
+            tickvals=df_age["Age Group"],
+            showgrid=False
+        ),
+        plot_bgcolor='white',
+        showlegend=False
+    )
+
+    # Display the plot in Streamlit
+    st.plotly_chart(fig, use_container_width=True, key="age_group")
 
 
 def pregnancy_choropleth_map():
