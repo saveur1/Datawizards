@@ -122,7 +122,12 @@ def main():
     with cols6:
         pcharts.wealth_quantile_chart()
 
-    pcharts.age_group_chart()
+    cols7, cols8 = st.columns([1,1])
+    with cols7:
+        pcharts.age_group_chart()
+    with cols8:
+        pcharts.province_chart()
+
     
     st.button("Ask AI", icon="💬", key="ai_chart_button", type="primary", on_click= assistant.chat_with_assistant, help="Click to chat with datawizard assistant.")
 
