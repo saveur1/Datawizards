@@ -343,6 +343,83 @@ def age_group_chart():
 
     # Display the plot in Streamlit
     st.plotly_chart(fig, use_container_width=True, key="age_group")
+def province_chart():
+    st.info(
+        "This graph displays the percentage of young women aged 15-19 who have started childbearing. It includes those who have had one or more children and those currently experiencing their first pregnancy. The percentages vary by province, reflecting trends based on the selected data filters."
+    )
+    # Retrieve filtered records and survey year
+    records = st.session_state.filtered_records  # Example: [{'province': 'Kigali', 'living_current_pregnancy': 1}, ...]
+
+    # Group records by province
+    province_groups = defaultdict(list)
+    for record in records:
+        province_groups[record["regions"]].append(record)
+
+    # Calculate statistics for each province
+    province_data = defaultdict(list)
+    for province, group in province_groups.items():
+        total_in_group = len(group)  # Total women in this specific province
+        currently_pregnant = sum(record["weights"] for record in group if record["living_current_pregnancy"] >= 1)  # Pregnant women in this province
+        percentage_pregnant = round((currently_pregnant / total_in_group * 100), 2) if total_in_group > 0 else 0  # Rounded percentage for this province
+
+        # Populate the data
+        province_data["Province"].append(province)
+        province_data["Total Women"].append(total_in_group)
+        province_data["Pregnant Women"].append(currently_pregnant)
+        province_data["Percentage Pregnant"].append(percentage_pregnant)
+
+    # Create the DataFrame
+    default_data = {
+        "Province": [],
+        "Total Women": [],
+        "Pregnant Women": [],
+        "Percentage Pregnant": []
+    }
+
+    df_province = pd.DataFrame(dict(province_data) or default_data)
+    df_province = df_province.sort_values(by="Percentage Pregnant", ascending=True)
+
+    # Create the bar chart using Plotly
+    fig = go.Figure()
+
+    fig.add_trace(go.Bar(
+        x=df_province["Percentage Pregnant"],
+        y=df_province["Province"],
+        text=[f'{x:.2f}%' for x in df_province["Percentage Pregnant"]],
+        textposition='inside',
+        orientation='h',
+        marker_color='#005cab',
+        hovertemplate='%{y}: %{x:.2f}%<extra></extra>'
+    ))
+
+    # Update layout
+    fig.update_layout(
+        title=dict(
+            text=f"<i>Pregnancy Rates by Province</i>",
+            x=0.5,
+            xanchor="center"
+        ),
+        height=300,
+        margin=dict(t=60, b=50, l=0, r=30),
+        xaxis=dict(
+            title="Percentage of Women",
+            showgrid=False,
+            zeroline=False
+        ),
+        yaxis=dict(
+            title="Province",
+            tickmode='array',
+            ticktext=df_province["Province"],
+            tickvals=df_province["Province"],
+            showgrid=False
+        ),
+        plot_bgcolor='white',
+        showlegend=False
+    )
+
+    # Display the plot in Streamlit
+    st.plotly_chart(fig, use_container_width=True, key="province_group")
+
 
 
 def pregnancy_choropleth_map():
