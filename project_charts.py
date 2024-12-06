@@ -65,19 +65,29 @@ def teenage_pregnancy_history(records):
     #state variable
     filtered_records = records
     district = st.session_state.session_district
+    survey_name = st.session_state.session_survey
 
     if district != "All Districts":
         filtered_records = [data for data in records if str(data["district"]).lower() == str(district).lower()]
-    # else:
-    #     filtered_records = [data for data in records if data["survey_round"] == st.session_state.session_survey]
+    
+    # filter out ages
+    selsected_ages = list({ record["current_age"] for record in st.session_state.filtered_records})
+    filtered_records = [record for record in records if record["current_age"] in selsected_ages]
+    
     # Get pregnancy counts for the earliest and latest year
     summary = app_logic.create_upload_summary(filtered_records, "survey_round")
 
     # Sort them by interview year
     summary = sorted(summary, key=lambda x: x["year"])
 
+    # Find the current entry index
+    current_index = next((i for i, entry in enumerate(summary) if entry["survey_round"] == survey_name), None)
+    
+    # Redefine summary data to stop at currently selected survey period
+    summary = summary[:current_index+1]
+
     # Survey round array
-    survey_rounds: list[str] = ["R"+data["survey_round"]  for data in summary ]
+    survey_rounds: list[str] = ["R-"+data["survey_round"]  for data in summary ]
 
     # Survey round pregnancy
     survey_pregnancies = [ data["pregnant_count"]  for data in summary ]
@@ -98,7 +108,8 @@ def teenage_pregnancy_history(records):
     fig.update_layout(
         height=400,
         title=dict(text=f"<i>Pregnancy History for { st.session_state.session_district }(%)</i>", x=0.5,xanchor="center"),
-        yaxis_title="Pregnant Teenage",
+        yaxis_title="Currently pregnant Teenager",
+        xaxis_title="Survey Periods",
         legend=dict(yanchor="top", y=-1, xanchor="center", x=0.5))
     
     st.plotly_chart(fig, use_container_width=True, key="CHART1")
