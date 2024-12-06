@@ -18,7 +18,7 @@ District boundaries are visualized using GeoJSON data, ensuring precise geograph
   - Offer recommendations based on comparative analyses.
   - Help navigate and interpret the dashboard’s features more effectively.
 - **Excel Template**: Easily upload data using our pre-formatted Excel template, ensuring consistency and simplifying the data input process.  
-  - Download the template from [here](./template/file.xlsx).  
+  - Download the template from [here](https://github.com/saveur1/Datawizards/raw/refs/heads/main/template/file.xlsx).  
 
 ## Live Demo
 
