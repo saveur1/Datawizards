@@ -192,8 +192,8 @@ def get_pregnancy_counts_grouped() -> List[dict]:
 
 
 def clean_district(district: str):
-    if "rural" in district.lower() or "urban" in district.lower():
-        cleaned = district.lower()
+    if "rural" in str(district).lower() or "urban" in str(district).lower():
+        cleaned = str(district).lower()
         cleaned = cleaned.replace("rural", "").replace("urban", "").replace("-", "")
         return " ".join(cleaned.split()).strip()
     
