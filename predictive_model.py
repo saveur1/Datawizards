@@ -140,19 +140,6 @@ def main():
     print(f"Mean of the future window:\n {forecast_entry.mean}")
     print(f"0.5-quantile (median) of the future window:\n {forecast_entry.quantile(0.5)}")
 
-    # Extract the true time series data
-    # plt.plot(ts_entry[-150:].to_timestamp())
-    # forecast_entry.plot(show_label=True, color="g")
-
-    # # Add labels, legend, and grid
-    # plt.title("True vs Predicted Values")
-    # plt.xlabel("Time")
-    # plt.ylabel("Values")
-    # plt.legend()
-    # plt.grid(True)
-
-    # # Display the chart in Streamlit
-    # st.pyplot(plt)
 
     gemini_chart(ts_entry, forecast_entry)
 

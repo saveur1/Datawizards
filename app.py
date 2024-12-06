@@ -58,7 +58,7 @@ def main():
     cols1, cols2 = st.columns([2,1])
     with cols1:
         #Data intry
-        uploaded_file = st.file_uploader(f"{"**Upload File**"}", type=["xls", "xlsx", "csv","dta"]) 
+        uploaded_file = st.file_uploader(f"{"**Upload File**"}", type=["xls", "xlsx", "csv"]) 
 
         if uploaded_file is not None:
             file_extension = uploaded_file.name.split('.')[-1].lower()
@@ -71,10 +71,6 @@ def main():
                 elif file_extension == 'csv':
                     data_frame = pd.read_csv(uploaded_file)
                     datas.upload_xlsx_file(uploaded_file, data_frame)
-                    
-                elif file_extension == 'dta':
-                # Process CSV file
-                    datas.upload_dta_file(uploaded_file)
                     
                 else:
                     st.error("Unsupported file type!")
@@ -127,6 +123,7 @@ def main():
         pcharts.wealth_quantile_chart()
 
     pcharts.age_group_chart()
+    assistant.main()
     st.button("Ask AI", icon="💬", key="ai_chart_button", type="primary", on_click= assistant.chat_with_assistant, help="Click to chat with datawizard assistant.")
 
 

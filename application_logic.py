@@ -2,7 +2,6 @@ import streamlit as st
 from typing import List
 from collections import defaultdict
 from streamlit_extras.metric_cards import style_metric_cards
-import pandas as pd
 
 # Local files
 import data_injection as file_data
@@ -111,7 +110,8 @@ def create_upload_summary(arr_records: List, group_name: str):
                 "survey_round": "",
                 "year": 0,
                 "district": "",
-                "child_bearing": 0
+                "child_bearing": 0,
+                "country": ""
             })
 
     for record in arr_records:
@@ -139,6 +139,9 @@ def create_upload_summary(arr_records: List, group_name: str):
 
         # Women count
         result[filter_name]["women_count"] += record["weights"]
+
+         # Country
+        result[filter_name]["country"] = record["country"]
 
         # Childbearing count
         if "living_current_pregnancy" in record:
@@ -307,24 +310,27 @@ def calculate_preg_percentages(pregnancy_records, women_records):
     return percentage
 
 def get_districts_string(records: List, survey_name: str):
-    output = f"The following are data for { survey_name } Survey round in each district:"
+    output = f"The following are data for { survey_name } Survey round in each district: "
 
     for record in records:
         # Stringify record
-        output += (f"{record["district"]} District(Pregnant Count={round(record["pregnant_count"], 0)}, "
-                   f"Total Women Teenager Count={round(record["women_count"], 0)}, Total Literate Female Teenager={ round(record["literacy_count"], 0)}, "
+        output += (f"{record["district"]} District(Pregnant Count={int(round(record["pregnant_count"], 0))}, "
+                   f"Total Women Teenager Count={int(round(record["women_count"], 0))}, Total Female Who bugun Child bearing={ int(round(record["child_bearing"], 0))}, "
                    f"Survey Round='{record["survey_round"]}')")
     
     return output
 
-def get_country_string(records: List):
-    output = '''
-                The following are summary list of data in whole country for each survey round:
+def get_country_string(records: List, country: str):
+    output = f'''
+                The following are summary list of data where country is { country }, for each survey round:
             '''
 
     for record in records:
         # Stringify record
-        output += (f"{record["survey_round"]} Survey(Pregnant Count={round(record["pregnancy_count"], 0)}, "
-                   f"Total Women Teenager Count={round(record["total_count"], 0)}, Total Literate Female Teenager={ round(record["literacy_count"], 0)}')")
+        child_bearing_percentage = ( record["child_bearing"]/ (record["women_count"] or 1) ) * 100
+        pregnant_percentage = ( record["pregnant_count"]/ (record["women_count"] or 1) ) * 100
+        
+        output += (f"{record["survey_round"]} Survey(Percentage Pregnant={int(round(pregnant_percentage, 0))}%, "
+                   f"Total Women Teenager Count={int(round(record["women_count"], 0))}, Percentage Who bugun Child bearing={ int(round(child_bearing_percentage, 0))}')")
     
     return output
