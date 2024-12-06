@@ -114,48 +114,71 @@ def teenage_pregnancy_history(records):
     
     st.plotly_chart(fig, use_container_width=True, key="CHART1")
 
-
 def education_statistics():
-    records = st.session_state.filtered_records
-    #education level grouping
-    education_groups = app_logic.records_grouped_by(records, "education_level")
+        # Description of Chat
+    st.info(
+        "This chart shows the education levels of young women aged 15-19 who have had one or more children, or are currently pregnant for the first time."
+    )
+        
+    # Assume `records` contains the data as a list of dictionaries
+    records = st.session_state.filtered_records  # Example: [{'education_level': 'High School', 'currently_pregnant': 1}, ...]
+
+    # Group data by education level
+    education_groups = defaultdict(list)
+    for record in records:
+        education_groups[record["education_level"]].append(record)
+
+    # Calculate statistics
     education_levels = defaultdict(list)
-    for level, records in education_groups.items():
-        education_levels["Education Level"].append(str(level).capitalize()),
-        education_levels["Number of Women"].append(len(records))
-    
+    total_women = len(records)  # Total number of women in the dataset
+
+    for level, group in education_groups.items():
+        total_in_group = len(group)
+        currently_pregnant = sum(1 for record in group if record["living_current_pregnancy"] >= 1)
+        percentage_pregnant = (currently_pregnant / total_women * 100) if total_women > 0 else 0
+
+        education_levels["Education Level"].append(str(level).capitalize())
+        education_levels["Total Women"].append(total_in_group)
+        education_levels["Pregnant Women"].append(currently_pregnant)
+        education_levels["Percentage Pregnant"].append(percentage_pregnant)
+
+    # Create the DataFrame
     default_ed = {
         "Education Level": [],
-        "Number of Women": []
+        "Total Women": [],
+        "Pregnant Women": [],
+        "Percentage Pregnant": []
     }
 
     df_education = pd.DataFrame(dict(education_levels) or default_ed)
-    df_education = df_education.sort_values(by="Number of Women", ascending= True)
+    df_education = df_education.sort_values(by="Percentage Pregnant", ascending=True)
 
     # Create the bar chart using Plotly
     fig = go.Figure()
 
     fig.add_trace(go.Bar(
-        x=df_education["Number of Women"],
+        x=df_education["Percentage Pregnant"],
         y=df_education["Education Level"],
-        text=[f'{x:,} Women' for x in df_education["Number of Women"]],
+        text=[f'{x:.2f}%' for x in df_education["Percentage Pregnant"]],
         textposition='inside',
         orientation='h',
         marker_color='#005cab',
-        hovertemplate='%{y}: %{x:,.0f} Women<extra></extra>'
+        hovertemplate='%{y}: %{x:.2f}%<extra></extra>'
     ))
 
     # Update layout
     fig.update_layout(
-        title=dict(text=f"<i>Education level in { st.session_state.session_district }</i>", x=0.5,xanchor="center"),
+        title=dict(text=f"<i>Childbearing Rates by Education Level in {st.session_state.session_district}</i>", 
+        x=0.5, xanchor="center"),
         height=300,
         margin=dict(t=60, b=50, l=0, r=30),
         xaxis=dict(
-            showticklabels=False,  # Hide x-axis labels as they're redundant with the bar labels
+            title="Percentage of Women",
             showgrid=False,
             zeroline=False
         ),
         yaxis=dict(
+            title="Education Level",
             tickmode='array',
             ticktext=df_education["Education Level"],
             tickvals=df_education["Education Level"],
@@ -167,108 +190,75 @@ def education_statistics():
 
     # Display the plot in Streamlit
     st.plotly_chart(fig, use_container_width=True, key="education_summary")
-    
-
-def provinces_statistics():
-    records = st.session_state.years_age_filter
-    #education level grouping
-    regions_groups = app_logic.records_grouped_by(records, "regions")
-    regions = defaultdict(list)
-
-    for region, records in regions_groups.items():
-        regions["Region"].append(str(region).capitalize()),
-        regions["Women Asked"].append(len(records))
-
-    default_regions = {
-        "Region": [],
-        "Women Asked": []
-    }
-
-    df = pd.DataFrame(regions or default_regions)
-    df = df.sort_values(by="Women Asked", ascending= True)
-
-    # Create the bar chart using Plotly
-    fig = go.Figure()
-
-    fig.add_trace(go.Bar(
-        x=df['Women Asked'],
-        y=df['Region'],
-        text=[f'{x:,} Women' for x in df['Women Asked']],
-        textposition='inside',
-        orientation='h',
-        marker_color='#005cab',  # Blue color similar to the image
-        hovertemplate='%{y}: %{x:,} Women<extra></extra>'
-    ))
-
-    # Update layout
-    fig.update_layout(
-        title=dict(text="<i>Regions sample summary</i>", x=0.5,xanchor="center"),
-        height=300,
-        margin=dict(t=60, b=50, l=0, r=30),
-        xaxis=dict(
-            showticklabels=False,  # Hide x-axis labels as they're redundant with the bar labels
-            showgrid=False,
-            zeroline=False
-        ),
-        yaxis=dict(
-            tickmode='array',
-            ticktext=df['Region'],
-            tickvals=df['Region'],
-            showgrid=False
-        ),
-        plot_bgcolor='white',
-        showlegend=False
-    )
-
-    # Display the plot in Streamlit
-    st.plotly_chart(fig, use_container_width=True,  key="regions_summary")
-
 
 def wealth_quantile_chart():
-    #education level grouping
-    records = st.session_state.filtered_records
-    regions_groups = app_logic.records_grouped_by(records, "wealth_quintile")
+        # Description of Chat
+    st.info(
+        "This chart shows the wealth quintile of young women aged 15-19 who have had one or more children, or are currently pregnant for the first time."
+    )
+        
+    # Assume `records` contains the data as a list of dictionaries
+    records = st.session_state.filtered_records  # Example: [{'education_level': 'High School', 'currently_pregnant': 1}, ...]
+
+    # Group data by wealth_category
+    regions_groups = defaultdict(list)
+    for record in records:
+        regions_groups[record["wealth_quintile"]].append(record)
+
+    # Calculate statistics
     regions = defaultdict(list)
+    total_women = len(records)  # Total number of women in the dataset
 
-    for region, records in regions_groups.items():
-        regions["wealth_category"].append(str(region).capitalize()),
-        regions["total_women"].append(app_logic.total_weights(records))
+    for level, group in regions_groups.items():
+        total_in_group = len(group)
+        currently_pregnant = sum(1 for record in group if record["living_current_pregnancy"] >= 1)
+        percentage_pregnant = (currently_pregnant / total_women * 100) if total_women > 0 else 0
 
-    default_wealths = {
+        regions["wealth_category"].append(str(level).capitalize())
+        regions["Total Women"].append(total_in_group)
+        regions["Pregnant Women"].append(currently_pregnant)
+        regions["Percentage Pregnant"].append(percentage_pregnant)
+
+    # Create the DataFrame
+    default_ed = {
         "wealth_category": [],
-        "total_women": []
+        "Total Women": [],
+        "Pregnant Women": [],
+        "Percentage Pregnant": []
     }
 
-    df = pd.DataFrame(regions or default_wealths)
-    df = df.sort_values(by="total_women", ascending=True)
+    df_wealth = pd.DataFrame(dict(regions) or default_ed)
+    df_wealth = df_wealth.sort_values(by="Percentage Pregnant", ascending=True)
 
     # Create the bar chart using Plotly
     fig = go.Figure()
 
     fig.add_trace(go.Bar(
-        x=df['total_women'],
-        y=df['wealth_category'],
-        text=[f'{x:,} Women' for x in df['total_women']],
+        x=df_wealth["Percentage Pregnant"],
+        y=df_wealth["wealth_category"],
+        text=[f'{x:.2f}%' for x in df_wealth["Percentage Pregnant"]],
         textposition='inside',
         orientation='h',
-        marker_color='#005cab',  # Blue color similar to the image
-        hovertemplate='%{y}: %{x:,} Women<extra></extra>'
+        marker_color='#005cab',
+        hovertemplate='%{y}: %{x:.2f}%<extra></extra>'
     ))
 
     # Update layout
     fig.update_layout(
-        title=dict(text=f"<i>Wealth Quintile for { st.session_state.session_district }</i>", x=0.5,xanchor="center"),
+        title=dict(text=f"<i>Pregnancy and Childbearing Rates by wealth_category in {st.session_state.session_district}</i>", 
+        x=0.5, xanchor="center"),
         height=300,
         margin=dict(t=60, b=50, l=0, r=30),
         xaxis=dict(
-            showticklabels=False,  # Hide x-axis labels as they're redundant with the bar labels
+            title="Percentage of Women Currently Pregnant",
             showgrid=False,
             zeroline=False
         ),
         yaxis=dict(
+            title="Wealth category",
             tickmode='array',
-            ticktext=df['wealth_category'],
-            tickvals=df['wealth_category'],
+            ticktext=df_wealth["wealth_category"],
+            tickvals=df_wealth["wealth_category"],
             showgrid=False
         ),
         plot_bgcolor='white',
@@ -276,8 +266,7 @@ def wealth_quantile_chart():
     )
 
     # Display the plot in Streamlit
-    st.plotly_chart(fig, use_container_width=True,  key="wealth_quantile")
-
+    st.plotly_chart(fig, use_container_width=True, key="wealthQ")
 
 
 def pregnancy_choropleth_map():

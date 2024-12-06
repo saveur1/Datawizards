@@ -119,14 +119,9 @@ def main():
     st.write("")
 
     # education level, provinces and wealth chart
-    cols5, cols6 = st.columns([2,1])
+    cols5, cols6 = st.columns([1,1])
     with cols5:
-        sub_col1, sub_col2 = st.columns(2)
-        with sub_col1:
-            pcharts.education_statistics()
-
-        with sub_col2:
-            pcharts.provinces_statistics()
+        pcharts.education_statistics()
 
     with cols6:
         pcharts.wealth_quantile_chart()
