@@ -141,7 +141,8 @@ def create_upload_summary(arr_records: List, group_name: str):
         result[filter_name]["women_count"] += record["weights"]
 
          # Country
-        result[filter_name]["country"] = record["country"]
+        if "country" in record:
+            result[filter_name]["country"] = record["country"]
 
         # Childbearing count
         if "living_current_pregnancy" in record:

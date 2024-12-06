@@ -7,6 +7,12 @@ import json
 from dotenv import load_dotenv
 import os
 import shutil
+
+
+__import__('pysqlite3')
+import sys
+sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+
 import chromadb
 
 # Gemini
@@ -17,11 +23,7 @@ from langchain.chains import RetrievalQA
 # Local imports
 import data_injection as datas
 import application_logic as app_logic
-import os
-import shutil
-__import__('pysqlite3')
-import sys
-sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+
 
 DATA_PATH = "static/data"
 CHROMA_PATH = "chroma"
